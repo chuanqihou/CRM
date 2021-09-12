@@ -1,5 +1,6 @@
 package com.chuanqihou.crm.settings.service;
 
+import com.chuanqihou.crm.exception.LoginException;
 import com.chuanqihou.crm.settings.domain.User;
 
 /**
@@ -8,5 +9,5 @@ import com.chuanqihou.crm.settings.domain.User;
  * @veersion 1.0
  */
 public interface UserService {
-    User login(String loginAct, String loginPwd, String ip);
+    User login(String loginAct, String loginPwd, String ip) throws LoginException;
 }
