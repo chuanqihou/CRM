@@ -14,7 +14,6 @@ public class PrintJson {
 	
 	//将boolean值解析为json串
 	public static void printJsonFlag(HttpServletResponse response,String key,boolean flag){
-		response.setContentType("html/text;charset=utf-8");
 		Map<String,Boolean> map = new HashMap<String,Boolean>();
 		map.put(key,flag);
 		
@@ -53,7 +52,6 @@ public class PrintJson {
 		 * 
 		 * 
 		 */
-		response.setContentType("html/text;charset=utf-8");
 		ObjectMapper om = new ObjectMapper();
 		try {
 			String json = om.writeValueAsString(obj);

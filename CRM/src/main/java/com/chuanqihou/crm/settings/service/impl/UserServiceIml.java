@@ -8,6 +8,7 @@ import com.chuanqihou.crm.utils.DateTimeUtil;
 import com.chuanqihou.crm.utils.SqlSessionUtil;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -31,7 +32,7 @@ public class UserServiceIml implements UserService {
 //        验证失效时间
         String expireTime = user.getExpireTime();
         String currentTime = DateTimeUtil.getSysTime();
-        if (expireTime.compareTo(currentTime)<0){
+        if ((expireTime.compareTo(currentTime))<0){
             throw new LoginException("账号授权时间已过期，请联系管理员");
         }
 //        判定账号是否锁定
@@ -45,6 +46,12 @@ public class UserServiceIml implements UserService {
             throw new LoginException("ip地址受限，请联系管理员");
         }
 //
-        return null;
+        return user;
+    }
+
+    @Override
+    public List<User> getUserList() {
+        List<User> userList = userDao.getUserList();
+        return userList;
     }
 }

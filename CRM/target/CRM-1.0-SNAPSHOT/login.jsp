@@ -6,9 +6,12 @@ Time: 15:28
 To change this template use File | Settings | File Templates.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%String path = request.getContextPath();
+	String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+path+"/";%>
 <!DOCTYPE html>
 <html>
 <head>
+	<base href="<%=basePath%>">
 <meta charset="UTF-8">
 <link href="jquery/bootstrap_3.3.0/css/bootstrap.min.css" type="text/css" rel="stylesheet" />
 <script type="text/javascript" src="jquery/jquery-1.11.1-min.js"></script>
@@ -16,6 +19,11 @@ To change this template use File | Settings | File Templates.
 	<script>
 		<%--页面加载完成后执行--%>
 		$(function (){
+
+			//设置为顶层窗口
+			if (window.top!=window){
+				window.top.location = window.location;
+			}
 
 			//给登录按钮绑定验证事件
 			$("#submitButt").click(function (){
@@ -77,7 +85,7 @@ To change this template use File | Settings | File Templates.
 				dataType : "json",
 				success : function (data){
 					if (data.success){
-						window.location.href = "workbench/index.html";
+						window.location.href = "workbench/index.jsp";
 					}else {
 						$("#msg").html(data.msg);
 					}
@@ -100,7 +108,7 @@ To change this template use File | Settings | File Templates.
 			<div class="page-header">
 				<h1>登录</h1>
 			</div>
-			<form action="workbench/index.html" class="form-horizontal" role="form">
+			<form action="workbench/index.jsp" class="form-horizontal" role="form">
 				<div class="form-group form-group-lg">
 					<div style="width: 350px;">
 						<input class="form-control" type="text" placeholder="用户名" id="loginAct">
