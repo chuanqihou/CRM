@@ -20,6 +20,17 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 	$(function(){
 		//点击调用模态窗口
 		$("#addBtn").click(function (){
+
+			//时间插件
+			$(".time").datetimepicker({
+				minView: "month",
+				language:  'zh-CN',
+				format: 'yyyy-mm-dd',
+				autoclose: true,
+				todayBtn: true,
+				pickerPosition: "bottom-left"
+			});
+
 			//加载用户信息
 			$.ajax({
 				url : "workbench/activity/getUserList.do",
@@ -30,16 +41,79 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 					$.each(data,function (i,n){
 						html+="<option value='"+n.id+"'>"+n.name+"</option>"
 					})
-					//将用户姓名添加
+					//将用户姓名添加至下拉框
 					$("#create-marketActivityOwner").html(html);
+					var id = "${user.id}";
+					$("#create-marketActivityOwner").val(id);
 					//打开模态窗口
 					$("#createActivityModal").modal("show");
 				}
 			})
 
 		})
+
+		//点击添加市场活动信息
+		$("#saveBtn").click(function(){
+			//ajax局部刷新添加操作
+			$.ajax({
+				url : "workbench/activity/save.do",
+				data : {
+					"owner" : $.trim($("#create-marketActivityOwner").val()),
+					"name" : $.trim($("#create-marketActivityName").val()),
+					"startDate" : $.trim($("#create-startTime").val()),
+					"endDate" : $.trim($("#create-endTime").val()),
+					"cost" : $.trim($("#create-cost").val()),
+					"description" : $.trim($("#create-describe").val())
+				},
+				type: "post",
+				dataType: "json",
+				success : function (data){
+					if (data.success){
+						$("#activitySaveForm")[0].reset();
+						$("#createActivityModal").modal("hide");
+					}else {
+						alert("添加市场活动失败！")
+					}
+				}
+			})
+		});
+
+		pageList(1,2);
+
+		$("#searchBtn").click(function (){
+			pageList(1,2);
+		});
 		
 	});
+
+	function pageList(pageNo,pageSize){
+		$.ajax({
+			url : "workbench/activity/pageList.do",
+			data : {
+				"pageNo" : pageNo,
+				"pageSize" : pageSize,
+				"name" : $.trim($("#search-name").val()),
+				"owner" : $.trim($("#search-owner").val()),
+				"startDate" : $.trim($("#search-startDate").val()),
+				"endDate" : $.trim($("#search-endDate").val()),
+			},
+			type : "get",
+			dataType : "json",
+			success : function (data){
+				var html = "";
+				$.each(data.dataList,function (i,n){
+					html+='<tr class="active">';
+					html+='<td><input type="checkbox" value="'+n.id+'" /></td>';
+					html+='<td><a style="text-decoration: none; cursor: pointer;" onclick="window.location.href=\'workbench/activity/detail.jsp\';">'+n.name+'</a></td>';
+					html+='<td>'+n.owner+'</td>';
+					html+='<td>'+n.startDate+'</td>';
+					html+='<td>'+n.endDate+'</td>';
+					html+='</tr>';
+				})
+				$("#activityBody").html(html);
+			}
+		})
+	}
 	
 </script>
 </head>
@@ -57,7 +131,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 				</div>
 				<div class="modal-body">
 				
-					<form class="form-horizontal" role="form">
+					<form id="activitySaveForm" class="form-horizontal" role="form">
 					
 						<div class="form-group">
 							<label for="create-marketActivityOwner" class="col-sm-2 control-label">所有者<span style="font-size: 15px; color: red;">*</span></label>
@@ -74,11 +148,11 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 						<div class="form-group">
 							<label for="create-startTime" class="col-sm-2 control-label">开始日期</label>
 							<div class="col-sm-10" style="width: 300px;">
-								<input type="text" class="form-control" id="create-startTime">
+								<input type="text" class="form-control time" id="create-startTime" readonly>
 							</div>
 							<label for="create-endTime" class="col-sm-2 control-label">结束日期</label>
 							<div class="col-sm-10" style="width: 300px;">
-								<input type="text" class="form-control" id="create-endTime">
+								<input type="text" class="form-control time" id="create-endTime" readonly>
 							</div>
 						</div>
                         <div class="form-group">
@@ -100,7 +174,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-					<button type="button" class="btn btn-primary" data-dismiss="modal">保存</button>
+					<button type="button" class="btn btn-primary" id="saveBtn">保存</button>
 				</div>
 			</div>
 		</div>
@@ -190,14 +264,14 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 				  <div class="form-group">
 				    <div class="input-group">
 				      <div class="input-group-addon">名称</div>
-				      <input class="form-control" type="text">
+				      <input class="form-control" type="text" id="search-name">
 				    </div>
 				  </div>
 				  
 				  <div class="form-group">
 				    <div class="input-group">
 				      <div class="input-group-addon">所有者</div>
-				      <input class="form-control" type="text">
+				      <input class="form-control" type="text" id="search-owner">
 				    </div>
 				  </div>
 
@@ -205,17 +279,17 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 				  <div class="form-group">
 				    <div class="input-group">
 				      <div class="input-group-addon">开始日期</div>
-					  <input class="form-control" type="text" id="startTime" />
+					  <input class="form-control" type="text" id="search-startDate" />
 				    </div>
 				  </div>
 				  <div class="form-group">
 				    <div class="input-group">
 				      <div class="input-group-addon">结束日期</div>
-					  <input class="form-control" type="text" id="endTime">
+					  <input class="form-control" type="text" id="search-endDate">
 				    </div>
 				  </div>
 				  
-				  <button type="submit" class="btn btn-default">查询</button>
+				  <button id="searchBtn" type="button" class="btn btn-default">查询</button>
 				  
 				</form>
 			</div>
@@ -238,8 +312,8 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 							<td>结束日期</td>
 						</tr>
 					</thead>
-					<tbody>
-						<tr class="active">
+					<tbody id="activityBody">
+<%--						<tr class="active">
 							<td><input type="checkbox" /></td>
 							<td><a style="text-decoration: none; cursor: pointer;" onclick="window.location.href='workbench/activity/detail.jsp';">发传单</a></td>
                             <td>zhangsan</td>
@@ -252,7 +326,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
                             <td>zhangsan</td>
                             <td>2020-10-10</td>
                             <td>2020-10-20</td>
-                        </tr>
+                        </tr>--%>
 					</tbody>
 				</table>
 			</div>

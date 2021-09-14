@@ -1,70 +1,64 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" id="WebApp_ID" version="2.5">
-  <display-name>crm</display-name>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+         id="WebApp_ID" version="2.5">
+    <display-name>crm</display-name>
 
 <!--  过滤器-->
+    <!-- 登录验证过滤器 -->
+    <filter>
+        <filter-name>LoginFilter</filter-name>
+        <filter-class>com.chuanqihou.crm.web.filter.LoginFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>LoginFilter</filter-name>
+        <url-pattern>*.do</url-pattern>
+        <url-pattern>*.jsp</url-pattern>
+    </filter-mapping>
+    <!-- 字符集过滤 -->
     <filter>
         <filter-name>EncodingFilter</filter-name>
         <filter-class>com.chuanqihou.crm.web.filter.EncodingFilter</filter-class>
     </filter>
-  <filter>
-    <filter-name>LoginFilter</filter-name>
-    <filter-class>com.chuanqihou.crm.web.filter.LoginFilter</filter-class>
-  </filter>
-  <filter-mapping>
-    <filter-name>LoginFilter</filter-name>
-    <url-pattern>*.do</url-pattern>
-    <url-pattern>*.jsp</url-pattern>
-  </filter-mapping>
-  <filter-mapping>
-    <filter-name>EncodingFilter</filter-name>
-    <url-pattern>*.do</url-pattern>
-  </filter-mapping>
+    <filter-mapping>
+        <filter-name>EncodingFilter</filter-name>
+        <url-pattern>*.do</url-pattern>
+    </filter-mapping>
+
 
 <!--  欢迎页-->
-  <welcome-file-list>
-    <welcome-file>index.html</welcome-file>
-  </welcome-file-list>
+    <welcome-file-list>
+        <welcome-file>index.html</welcome-file>
+    </welcome-file-list>
 
 <!--  用户Servlet-->
-  <servlet>
-    <servlet-name>UserController</servlet-name>
-    <servlet-class>com.chuanqihou.crm.settings.web.controller.UserController</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>UserController</servlet-name>
-    <url-pattern>/setting/user/login.do</url-pattern>
-  </servlet-mapping>
+    <servlet>
+        <servlet-name>UserController</servlet-name>
+        <servlet-class>com.chuanqihou.crm.settings.web.controller.UserController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>UserController</servlet-name>
+        <!--  登录验证  -->
+        <url-pattern>/setting/user/login.do</url-pattern>
+    </servlet-mapping>
 
 <!--  市场活动Servlet-->
-  <servlet>
-    <servlet-name>ActivityController</servlet-name>
-    <servlet-class>com.chuanqihou.crm.workbench.web.controller.ActivityController</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>ActivityController</servlet-name>
-    <url-pattern>/workbench/activity/getUserList.do</url-pattern>
-  </servlet-mapping>
-  
-  
+    <servlet>
+        <servlet-name>ActivityController</servlet-name>
+        <servlet-class>com.chuanqihou.crm.workbench.web.controller.ActivityController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ActivityController</servlet-name>
+        <!--  查询所有用户信息  -->
+        <url-pattern>/workbench/activity/getUserList.do</url-pattern>
+        <!--  添加市场活动信息  -->
+        <url-pattern>/workbench/activity/save.do</url-pattern>
+
+        <url-pattern>/workbench/activity/pageList.do</url-pattern>
+    </servlet-mapping>
+
+
 </web-app>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
