@@ -20,7 +20,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 	$(function(){
 		//点击调用模态窗口
 		$("#addBtn").click(function (){
-
+			//加载用户信息
 			$.ajax({
 				url : "workbench/activity/getUserList.do",
 				type : "get",
@@ -30,7 +30,9 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 					$.each(data,function (i,n){
 						html+="<option value='"+n.id+"'>"+n.name+"</option>"
 					})
+					//将用户姓名添加
 					$("#create-marketActivityOwner").html(html);
+					//打开模态窗口
 					$("#createActivityModal").modal("show");
 				}
 			})

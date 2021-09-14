@@ -17,13 +17,24 @@ import java.util.Map;
  * @veersion 1.0
  */
 public class UserServiceIml implements UserService {
+//    用户dao动态sql对象
     private UserDao userDao = SqlSessionUtil.getSqlSession().getMapper(UserDao.class);
 
+    /**
+     * 用户信息验证（数据库）
+     * @param loginAct 用户账号
+     * @param loginPwd 用户密码（已加密）
+     * @param ip 用户IP
+     * @return  User对象
+     * @throws LoginException 登录失败异常信息
+     */
     @Override
     public User login(String loginAct, String loginPwd, String ip) throws LoginException {
+        //将数据库条件封装成map集合
         Map<String,String> map = new HashMap<>();
         map.put("loginAct",loginAct);
         map.put("loginPwd",loginPwd);
+        //调用数据库返回User对象
         User user = userDao.login(map);
 //        验证账号和密码
         if (user==null){
@@ -45,12 +56,17 @@ public class UserServiceIml implements UserService {
         if (!allowIp.contains(ip)){
             throw new LoginException("ip地址受限，请联系管理员");
         }
-//
+        //返回User对象
         return user;
     }
 
+    /**
+     * 获取所有用户信息
+     * @return  返回用户信息集合
+     */
     @Override
     public List<User> getUserList() {
+//        查询（调用数据库）
         List<User> userList = userDao.getUserList();
         return userList;
     }

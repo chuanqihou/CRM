@@ -11,7 +11,9 @@ import java.util.Map;
  * @veersion 1.0
  */
 public interface UserDao {
+    //用户登录验证DAO
     User login(Map<String, String> map);
 
+//    查询所有用户信息
     List<User> getUserList();
 }

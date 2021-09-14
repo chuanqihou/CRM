@@ -9,7 +9,7 @@
   <typeAliases>
   
   	<package name="com.chuanqihou.crm.settings.dao"/>
-  	
+    <package name="com.chuanqihou.crm.workbench.dao"/>
   
   </typeAliases>
   
@@ -29,6 +29,7 @@
   <mappers>
    
       <package name="com.chuanqihou.crm.settings.dao"/>
+      <package name="com.chuanqihou.crm.workbench.dao"/>
     
   </mappers>
 </configuration>
