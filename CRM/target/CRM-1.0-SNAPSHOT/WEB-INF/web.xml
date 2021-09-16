@@ -57,6 +57,11 @@
         <url-pattern>/workbench/activity/pageList.do</url-pattern>
         <!--  根据选中条件删除市场活动信息      -->
         <url-pattern>/workbench/activity/delete.do</url-pattern>
+
+        <url-pattern>/workbench/activity/getUserListAndActivity.do</url-pattern>
+
+        <url-pattern>/workbench/activity/update.do</url-pattern>
+
     </servlet-mapping>
 
 

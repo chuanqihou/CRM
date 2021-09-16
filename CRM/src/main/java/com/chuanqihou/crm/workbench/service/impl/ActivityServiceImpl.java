@@ -1,5 +1,7 @@
 package com.chuanqihou.crm.workbench.service.impl;
 
+import com.chuanqihou.crm.settings.dao.UserDao;
+import com.chuanqihou.crm.settings.domain.User;
 import com.chuanqihou.crm.utils.SqlSessionUtil;
 import com.chuanqihou.crm.vo.PaginationVo;
 import com.chuanqihou.crm.workbench.dao.ActivityDao;
@@ -7,6 +9,7 @@ import com.chuanqihou.crm.workbench.dao.ActivityRemarkDao;
 import com.chuanqihou.crm.workbench.domain.Activity;
 import com.chuanqihou.crm.workbench.service.ActivityService;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -22,6 +25,7 @@ public class ActivityServiceImpl implements ActivityService {
     //处理SQL语句DAO对象
     private ActivityDao activityDao = SqlSessionUtil.getSqlSession().getMapper(ActivityDao.class);
     private ActivityRemarkDao activityRemarkDao = SqlSessionUtil.getSqlSession().getMapper(ActivityRemarkDao.class);
+    private UserDao userDao = SqlSessionUtil.getSqlSession().getMapper(UserDao.class);
 
     /**
      * 添加市场活动信息
@@ -81,6 +85,26 @@ public class ActivityServiceImpl implements ActivityService {
             flag = false;
         }
         //返回结果
+        return flag;
+    }
+
+    @Override
+    public Map<String, Object> getUserListAndActivity(String id) {
+        List<User> userList = userDao.getUserList();
+        Activity a = activityDao.getById(id);
+        a.getOwner();
+        Map<String,Object> map = new HashMap<>();
+        map.put("a",a);
+        map.put("uList",userList);
+        return map;
+    }
+
+    @Override
+    public boolean update(Activity activity) {
+        boolean flag = true;
+        if (activityDao.update(activity)!=1){
+            flag = false;
+        }
         return flag;
     }
 }

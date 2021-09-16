@@ -21,4 +21,8 @@ public interface ActivityService {
 
     //根据条件（市场活动Id）删除市场活动信息
     boolean delete(String[] ids);
+
+    Map<String, Object> getUserListAndActivity(String id);
+
+    boolean update(Activity activity);
 }

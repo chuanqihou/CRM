@@ -47,7 +47,46 @@ public class ActivityController extends HttpServlet {
         //进入根据选中Id删除市场活动信息
         }else if ("/workbench/activity/delete.do".equals(path)){
             delete(request,response);
+        }else if ("/workbench/activity/getUserListAndActivity.do".equals(path)){
+            getUserListAndActivity(request,response);
+        }else if("/workbench/activity/update.do".equals(path)){
+            update(request,response);
         }
+    }
+
+    private void update(HttpServletRequest request, HttpServletResponse response) {
+        ActivityService activityService = (ActivityService) ServiceFactory.getService(new ActivityServiceImpl());
+        String id = request.getParameter("id");
+        String owner = request.getParameter("owner");
+        String name = request.getParameter("name");
+        String startDate = request.getParameter("startDate");
+        String endDate = request.getParameter("endDate");
+        String cost = request.getParameter("cost");
+        String description = request.getParameter("description");
+        String editTime = DateTimeUtil.getSysTime();
+        String editBy = ((User)request.getSession().getAttribute("user")).getName();
+
+        Activity activity = new Activity();
+        activity.setCost(cost);
+        activity.setDescription(description);
+        activity.setId(id);
+        activity.setName(name);
+        activity.setOwner(owner);
+        activity.setStartDate(startDate);
+        activity.setEndDate(endDate);
+        activity.setEditTime(editTime);
+        activity.setEditBy(editBy);
+
+        boolean flag = activityService.update(activity);
+
+        PrintJson.printJsonFlag(response,"success",flag);
+    }
+
+    private void getUserListAndActivity(HttpServletRequest request, HttpServletResponse response) {
+        ActivityService activityService = (ActivityService) ServiceFactory.getService(new ActivityServiceImpl());
+        String id = request.getParameter("id");
+        Map<String,Object> map = activityService.getUserListAndActivity(id);
+        PrintJson.printJsonObj(response,map);
     }
 
     private void delete(HttpServletRequest request, HttpServletResponse response) {

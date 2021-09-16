@@ -113,7 +113,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 			var $xz = $("input[name=xz]:checked");
 			//判断数量
 			if ($xz.length==0){
-				alert("请选择需要删除的数据！")
+				alert("请选择需要删除的市场活动！")
 			}else {
 				if (confirm("确定删除数据吗？")){
 					//拼接参数（需要删除市场活动信息的Id）
@@ -143,6 +143,70 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 					})
 				}
 			}
+		});
+
+		//点击修改市场活动信息
+		$("#editBtn").click(function (){
+			//获取选中需要删除市场活动信息数量
+			var $xz = $("input[name=xz]:checked");
+			if ($xz.length==0){
+				alert("请选择需要修改的市场活动！")
+			}else if ($xz.length>=2){
+				alert("只能选择一条记录进行修改！")
+			}else {
+				var id = $xz.val();
+
+				$.ajax({
+					url : "workbench/activity/getUserListAndActivity.do",
+					data : {
+						id
+					},
+					type : "get",
+					dataType : "json",
+					success : function (data){
+						var html = "";
+						$.each(data.uList,function (i,n){
+							html+="<option id='"+n.id+"'>"+n.name+"</option>";
+						})
+						$("#edit-marketActivityOwner").html(html);
+						$("#edit-describe").val(data.a.description);
+						$("#edit-cost").val(data.a.cost);
+						$("#edit-endTime").val(data.a.endDate);
+						$("#edit-startTime").val(data.a.startDate);
+						$("#edit-marketActivityName").val(data.a.name);
+						$("#edit-id").val(data.a.id);
+
+						$("#editActivityModal").modal("show");
+					}
+				})
+			}
+		});
+
+		$("#updateBtn").click(function(){
+			//ajax局部刷新更新操作
+			$.ajax({
+				url : "workbench/activity/update.do",
+				data : {
+					"id" : $.trim($("#edit-id").val()),
+					"owner" : $.trim($("#edit-marketActivityOwner").val()),
+					"name" : $.trim($("#edit-marketActivityName").val()),
+					"startDate" : $.trim($("#edit-startTime").val()),
+					"endDate" : $.trim($("#edit-endTime").val()),
+					"cost" : $.trim($("#edit-cost").val()),
+					"description" : $.trim($("#edit-describe").val())
+				},
+				type: "post",
+				dataType: "json",
+				success : function (data){
+					if (data.success){
+						// $("#activitySaveForm")[0].reset();
+						$("#editActivityModal").modal("hide");
+						pageList(1,2);
+					}else {
+						alert("修改市场活动失败！")
+					}
+				}
+			})
 		});
 	});
 
@@ -303,44 +367,41 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 				<div class="modal-body">
 				
 					<form class="form-horizontal" role="form">
-					
+						<input type="hidden" id="edit-id">
 						<div class="form-group">
 							<label for="edit-marketActivityOwner" class="col-sm-2 control-label">所有者<span style="font-size: 15px; color: red;">*</span></label>
 							<div class="col-sm-10" style="width: 300px;">
 								<select class="form-control" id="edit-marketActivityOwner">
-								  <option>zhangsan</option>
-								  <option>lisi</option>
-								  <option>wangwu</option>
 								</select>
 							</div>
                             <label for="edit-marketActivityName" class="col-sm-2 control-label">名称<span style="font-size: 15px; color: red;">*</span></label>
                             <div class="col-sm-10" style="width: 300px;">
-                                <input type="text" class="form-control" id="edit-marketActivityName" value="发传单">
+                                <input type="text" class="form-control" id="edit-marketActivityName">
                             </div>
 						</div>
 
 						<div class="form-group">
 							<label for="edit-startTime" class="col-sm-2 control-label">开始日期</label>
 							<div class="col-sm-10" style="width: 300px;">
-								<input type="text" class="form-control" id="edit-startTime" value="2020-10-10">
+								<input type="text" class="form-control time" id="edit-startTime" readonly>
 							</div>
 							<label for="edit-endTime" class="col-sm-2 control-label">结束日期</label>
 							<div class="col-sm-10" style="width: 300px;">
-								<input type="text" class="form-control" id="edit-endTime" value="2020-10-20">
+								<input type="text" class="form-control time" id="edit-endTime" readonly>
 							</div>
 						</div>
 						
 						<div class="form-group">
 							<label for="edit-cost" class="col-sm-2 control-label">成本</label>
 							<div class="col-sm-10" style="width: 300px;">
-								<input type="text" class="form-control" id="edit-cost" value="5,000">
+								<input type="text" class="form-control" id="edit-cost">
 							</div>
 						</div>
 						
 						<div class="form-group">
 							<label for="edit-describe" class="col-sm-2 control-label">描述</label>
 							<div class="col-sm-10" style="width: 81%;">
-								<textarea class="form-control" rows="3" id="edit-describe">市场活动Marketing，是指品牌主办或参与的展览会议与公关市场活动，包括自行主办的各类研讨会、客户交流会、演示会、新产品发布会、体验会、答谢会、年会和出席参加并布展或演讲的展览会、研讨会、行业交流会、颁奖典礼等</textarea>
+								<textarea class="form-control" rows="3" id="edit-describe"></textarea>
 							</div>
 						</div>
 						
@@ -349,7 +410,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-					<button type="button" class="btn btn-primary" data-dismiss="modal">更新</button>
+					<button type="button" class="btn btn-primary" id="updateBtn">更新</button>
 				</div>
 			</div>
 		</div>
@@ -406,7 +467,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 			<div class="btn-toolbar" role="toolbar" style="background-color: #F7F7F7; height: 50px; position: relative;top: 5px;">
 				<div class="btn-group" style="position: relative; top: 18%;">
 				  <button type="button" class="btn btn-primary" id="addBtn"><span class="glyphicon glyphicon-plus"></span> 创建</button>
-				  <button type="button" class="btn btn-default" data-toggle="modal" data-target="#editActivityModal"><span class="glyphicon glyphicon-pencil"></span> 修改</button>
+				  <button type="button" class="btn btn-default" id="editBtn"><span class="glyphicon glyphicon-pencil"></span> 修改</button>
 				  <button type="button" class="btn btn-danger" id="deleteBtn"><span class="glyphicon glyphicon-minus"></span> 删除</button>
 				</div>
 				
