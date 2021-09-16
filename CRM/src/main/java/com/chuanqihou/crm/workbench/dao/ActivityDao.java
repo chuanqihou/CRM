@@ -13,10 +13,12 @@ import java.util.Map;
 
 //市场DAO层
 public interface ActivityDao {
-    //添加市场活动信息DAO
+    //添加市场活动信息
     int save(Activity activity);
-
+    //根据条件查询所有市场活动信息
     List<Activity> getActivityByCondition(Map<String, Object> map);
-
+    //根据条件查询市场活动信息列表总数
     int getTotalByCondition(Map<String, Object> map);
+
+    int delete(String[] ids);
 }

@@ -53,8 +53,10 @@
         <url-pattern>/workbench/activity/getUserList.do</url-pattern>
         <!--  添加市场活动信息  -->
         <url-pattern>/workbench/activity/save.do</url-pattern>
-
+        <!--  根据条件查询市场活动信息列表     -->
         <url-pattern>/workbench/activity/pageList.do</url-pattern>
+        <!--  根据选中条件删除市场活动信息      -->
+        <url-pattern>/workbench/activity/delete.do</url-pattern>
     </servlet-mapping>
 
 

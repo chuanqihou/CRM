@@ -6,4 +6,7 @@ package com.chuanqihou.crm.workbench.dao;
  * @veersion 1.0
  */
 public interface ActivityRemarkDao {
+    int getCountByIds(String[] ids);
+
+    int deleteByIds(String[] ids);
 }

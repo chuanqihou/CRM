@@ -35,19 +35,44 @@ public class ActivityController extends HttpServlet {
     protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         System.out.println("进入到市场活动Servlet");
         String path = request.getServletPath();
+        //进入获取用户信息方法（get）
         if ("/workbench/activity/getUserList.do".equals(path)){
             getUserList(request,response);
+        //进入创建市场活动信息方法(insert)
         }else if ("/workbench/activity/save.do".equals(path)){
             save(request,response);
+        //进入根据条件获取市场活动信息列表并返回总页数和市场活动信息
         }else if ("/workbench/activity/pageList.do".equals(path)){
             pageList(request,response);
+        //进入根据选中Id删除市场活动信息
+        }else if ("/workbench/activity/delete.do".equals(path)){
+            delete(request,response);
         }
     }
 
+    private void delete(HttpServletRequest request, HttpServletResponse response) {
+        //获取市场活动执行业务对象
+        ActivityService activityService = (ActivityService) ServiceFactory.getService(new ActivityServiceImpl());
+        System.out.println("执行市场活动删除操作！");
+        //获取删除条件（市场活动Id）
+        String[] ids = request.getParameterValues("id");
+        //调用DAO执行删除操作并返回结果
+        boolean flag = activityService.delete(ids);
+        //将结果转换成json对象并传入前端
+        PrintJson.printJsonFlag(response,"success",flag);
+    }
+
+    /**
+     * 查询市场活动信息列表操作（结合条件查询和分页查询）
+     * @param request 请求
+     * @param response 响应
+     */
     private void pageList(HttpServletRequest request, HttpServletResponse response) {
         ActivityService activityService = (ActivityService) ServiceFactory.getService(new ActivityServiceImpl());
 
         System.out.println("进入到查询市场活动信息列表操作（结合条件查询和分页查询）");
+
+        //获取参数
         String pageNoStr = request.getParameter("pageNo");
         String pageSizeStr = request.getParameter("pageSize");
         String name = request.getParameter("name");
@@ -55,10 +80,12 @@ public class ActivityController extends HttpServlet {
         String startDate = request.getParameter("startDate");
         String endDate = request.getParameter("endDate");
 
+        //将页码和总页数转化成int类型
         int pageNo = Integer.valueOf(pageNoStr);
         int pageSize = Integer.valueOf(pageSizeStr);
+        //获取分页查询时略过数据（SQL语句 limit中的第一个条件）
         int skipCount = (pageNo-1)*pageSize;
-
+        //将所有条件封装成map集合
         Map<String, Object> map = new HashMap<>();
         map.put("name",name);
         map.put("owner",owner);
@@ -66,7 +93,9 @@ public class ActivityController extends HttpServlet {
         map.put("endDate",endDate);
         map.put("pageSize",pageSize);
         map.put("skipCount",skipCount);
+        //调用市场活动业务对象中的根据条件查询方法，传入map条件，并将总条数和市场活动信息列表数据返回到PaginationVo<Activity>对象
         PaginationVo<Activity> vo = activityService.pageList(map);
+        //将PaginationVo<Activity>对象转换成json数据并返回至前端
         PrintJson.printJsonObj(response,vo);
 
     }

@@ -16,5 +16,9 @@ public interface ActivityService {
     //添加市场活动信息
     boolean save(Activity activity);
 
+    //根据条件查询所有市场活动信息（用于展示数据），并将结果返回至PaginationVo<Activity>对象
     PaginationVo<Activity> pageList(Map<String, Object> map);
+
+    //根据条件（市场活动Id）删除市场活动信息
+    boolean delete(String[] ids);
 }

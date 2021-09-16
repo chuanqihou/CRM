@@ -11,16 +11,16 @@
         )values (#{id},#{owner},#{name},#{startDate},#{endDate},#{cost},#{description},#{createTime},#{createBy})
     </insert>
 
+<!--    根据条件查询市场活动信息列表总数动态SQL-->
     <select id="getActivityByCondition" resultType="com.chuanqihou.crm.workbench.domain.Activity">
         select a.id,a.name,u.name as owner,a.startDate,a.endDate from tbl_activity a join tbl_user u on a.owner=u.id
         <where>
-
             <if test="name!=null and name!=''">
                 a.name like '%' #{name} '%'
             </if>
 
             <if test="owner!=null and owner!=''">
-                and u.owner like '%' #{owner} '%'
+                and u.name like '%' #{owner} '%'
             </if>
 
             <if test="startDate!=null and startDate!=''">
@@ -37,7 +37,8 @@
         limit #{skipCount},#{pageSize}
 
     </select>
-    
+
+<!--    根据条件查询市场活动信息列表总数动态SQL-->
     <select id="getTotalByCondition" resultType="int">
         select count(*) from tbl_activity a join tbl_user u on a.owner=u.id
         <where>
@@ -47,7 +48,7 @@
             </if>
 
             <if test="owner!=null and owner!=''">
-                and u.owner like '%' #{owner} '%'
+                and u.name like '%' #{owner} '%'
             </if>
 
             <if test="startDate!=null and startDate!=''">
@@ -59,6 +60,14 @@
             </if>
         </where>
     </select>
+
+<!--    根据选中的市场活动信息Id删除市场活动-->
+    <delete id="delete">
+        delete from tbl_activity where id in
+        <foreach collection="array" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
 
 </mapper>
 

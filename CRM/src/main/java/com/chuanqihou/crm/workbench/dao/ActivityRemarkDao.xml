@@ -5,6 +5,21 @@
 
 <mapper namespace="com.chuanqihou.crm.workbench.dao.ActivityRemarkDao">
 
+<!--    根据外键市场活动Id删除相关备注信息-->
+    <delete id="deleteByIds">
+        delete from tbl_activity_remark where activityId in
+        <foreach collection="array" item="aid" open="(" close=")" separator=",">
+            #{aid}
+        </foreach>
+    </delete>
+
+<!--    根据外键市场活动Id查询需要删除备注的数量-->
+    <select id="getCountByIds" resultType="int">
+        select count(*) from tbl_activity_remark where activityId in
+        <foreach collection="array" item="aid" open="(" close=")" separator=",">
+             #{aid}
+        </foreach>
+    </select>
 	
 </mapper>
 
