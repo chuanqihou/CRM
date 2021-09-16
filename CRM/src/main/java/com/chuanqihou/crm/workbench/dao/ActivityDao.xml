@@ -69,10 +69,12 @@
         </foreach>
     </delete>
 
+<!--    根据条件查询市场活动信息-->
     <select id="getById" resultType="com.chuanqihou.crm.workbench.domain.Activity">
         select *from tbl_activity where id=#{id}
     </select>
 
+<!--    更新市场活动信息-->
     <update id="update">
         update tbl_activity set
             owner=#{owner},

@@ -22,7 +22,9 @@ public interface ActivityService {
     //根据条件（市场活动Id）删除市场活动信息
     boolean delete(String[] ids);
 
+    //获取List<User>,和一个市场活动信息
     Map<String, Object> getUserListAndActivity(String id);
 
+    //根据条件更新市场活动信息
     boolean update(Activity activity);
 }

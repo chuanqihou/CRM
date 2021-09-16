@@ -88,23 +88,39 @@ public class ActivityServiceImpl implements ActivityService {
         return flag;
     }
 
+    /**
+     * 根据条件更新市场活动信息
+     * @param id 更新条件
+     * @return  返回更新状态
+     */
     @Override
     public Map<String, Object> getUserListAndActivity(String id) {
+        //获取所有用户信息
         List<User> userList = userDao.getUserList();
+        //获取市场活动信息
         Activity a = activityDao.getById(id);
-        a.getOwner();
+        //将结果封装至map对象
         Map<String,Object> map = new HashMap<>();
         map.put("a",a);
         map.put("uList",userList);
+        //返回结果
         return map;
     }
 
+    /**
+     * 根据条件更新市场活动信息
+     * @param activity  需要更新的内容
+     * @return  返回更新状态
+     */
     @Override
-    public boolean update(Activity activity) {
+    public boolean update(Activity activity){
+        //定义默认值
         boolean flag = true;
+        //判断更新状态
         if (activityDao.update(activity)!=1){
             flag = false;
         }
+        //返回结果
         return flag;
     }
 }

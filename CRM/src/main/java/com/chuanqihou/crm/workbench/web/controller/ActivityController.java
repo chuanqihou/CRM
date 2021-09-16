@@ -47,15 +47,24 @@ public class ActivityController extends HttpServlet {
         //进入根据选中Id删除市场活动信息
         }else if ("/workbench/activity/delete.do".equals(path)){
             delete(request,response);
+        //根据市场活动Id查询市场活动信息；查询所有用户信息；目的：获取修改市场活动信息模板页面中的数据
         }else if ("/workbench/activity/getUserListAndActivity.do".equals(path)){
             getUserListAndActivity(request,response);
+        //根据条件更新市场活动信息
         }else if("/workbench/activity/update.do".equals(path)){
             update(request,response);
         }
     }
 
+    /**
+     * 根据市场活动信息Id更新市场活动信息
+     * @param request   请求
+     * @param response 响应
+     */
     private void update(HttpServletRequest request, HttpServletResponse response) {
+        //获取市场活动信息Service业务逻辑对象（反射机制）
         ActivityService activityService = (ActivityService) ServiceFactory.getService(new ActivityServiceImpl());
+        //获取参数
         String id = request.getParameter("id");
         String owner = request.getParameter("owner");
         String name = request.getParameter("name");
@@ -63,9 +72,11 @@ public class ActivityController extends HttpServlet {
         String endDate = request.getParameter("endDate");
         String cost = request.getParameter("cost");
         String description = request.getParameter("description");
+        //利用工具获取当前系统时间
         String editTime = DateTimeUtil.getSysTime();
+        //从Session域中取得当前登录Use信息
         String editBy = ((User)request.getSession().getAttribute("user")).getName();
-
+        //将更新内容封装到Activity对象中
         Activity activity = new Activity();
         activity.setCost(cost);
         activity.setDescription(description);
@@ -76,23 +87,31 @@ public class ActivityController extends HttpServlet {
         activity.setEndDate(endDate);
         activity.setEditTime(editTime);
         activity.setEditBy(editBy);
-
+        //调用Dao对象并返回更新状态
         boolean flag = activityService.update(activity);
-
+        //将更新结果利用工具转换成json对象并传入前端
         PrintJson.printJsonFlag(response,"success",flag);
     }
 
+    /**
+     * 根据市场活动Id查询市场活动信息；查询所有用户信息；目的：获取修改市场活动信息模板页面中的数据
+     * @param request 请求
+     * @param response 响应
+     */
     private void getUserListAndActivity(HttpServletRequest request, HttpServletResponse response) {
+        //获取市场活动信息Service业务逻辑对象（反射机制）
         ActivityService activityService = (ActivityService) ServiceFactory.getService(new ActivityServiceImpl());
+        //获取参数信息
         String id = request.getParameter("id");
+        //调用Dao处理数据
         Map<String,Object> map = activityService.getUserListAndActivity(id);
+        //将map对象转换成json对象并将其传入前端
         PrintJson.printJsonObj(response,map);
     }
 
     private void delete(HttpServletRequest request, HttpServletResponse response) {
-        //获取市场活动执行业务对象
+        //获取市场活动信息Service业务逻辑对象（反射机制）
         ActivityService activityService = (ActivityService) ServiceFactory.getService(new ActivityServiceImpl());
-        System.out.println("执行市场活动删除操作！");
         //获取删除条件（市场活动Id）
         String[] ids = request.getParameterValues("id");
         //调用DAO执行删除操作并返回结果
@@ -107,10 +126,8 @@ public class ActivityController extends HttpServlet {
      * @param response 响应
      */
     private void pageList(HttpServletRequest request, HttpServletResponse response) {
+        //获取市场活动信息Service业务逻辑对象（反射机制）
         ActivityService activityService = (ActivityService) ServiceFactory.getService(new ActivityServiceImpl());
-
-        System.out.println("进入到查询市场活动信息列表操作（结合条件查询和分页查询）");
-
         //获取参数
         String pageNoStr = request.getParameter("pageNo");
         String pageSizeStr = request.getParameter("pageSize");
@@ -118,7 +135,6 @@ public class ActivityController extends HttpServlet {
         String owner = request.getParameter("owner");
         String startDate = request.getParameter("startDate");
         String endDate = request.getParameter("endDate");
-
         //将页码和总页数转化成int类型
         int pageNo = Integer.valueOf(pageNoStr);
         int pageSize = Integer.valueOf(pageSizeStr);
@@ -136,7 +152,6 @@ public class ActivityController extends HttpServlet {
         PaginationVo<Activity> vo = activityService.pageList(map);
         //将PaginationVo<Activity>对象转换成json数据并返回至前端
         PrintJson.printJsonObj(response,vo);
-
     }
 
     /**
@@ -145,20 +160,21 @@ public class ActivityController extends HttpServlet {
      * @param response  响应
      */
     private void save(HttpServletRequest request, HttpServletResponse response) {
+        //获取市场活动信息Service业务逻辑对象（反射机制）
         ActivityService activityService = (ActivityService) ServiceFactory.getService(new ActivityServiceImpl());
-
-        System.out.println("进入到市场活动添加操作");
         //获取参数信息
-        String id = UUIDUtil.getUUID();
         String owner = request.getParameter("owner");
         String name = request.getParameter("name");
         String startDate = request.getParameter("startDate");
         String endDate = request.getParameter("endDate");
         String cost = request.getParameter("cost");
         String description = request.getParameter("description");
+        //利用工具生成Id
+        String id = UUIDUtil.getUUID();
+        //利用工具获取当前系统时间
         String createTime = DateTimeUtil.getSysTime();
+        //从Session域中获取用户信息
         String createBy = ((User)request.getSession().getAttribute("user")).getName();
-
         //将数据封装在Activity对象中
         Activity activity = new Activity();
         activity.setCost(cost);
@@ -170,7 +186,6 @@ public class ActivityController extends HttpServlet {
         activity.setOwner(owner);
         activity.setStartDate(startDate);
         activity.setEndDate(endDate);
-
         //调用业务层完善插入条件和获取插入状态
         boolean flag = activityService.save(activity);
         //将插入结果转换成json对象并传入前端
@@ -183,8 +198,7 @@ public class ActivityController extends HttpServlet {
      * @param response  响应
      */
     private void getUserList(HttpServletRequest request, HttpServletResponse response) {
-        System.out.println("取得用户信息列表");
-        //用户信息处理Service对象
+        //用户信息处理Service业务逻辑对象（反射机制）
         UserService userService = (UserService) ServiceFactory.getService(new UserServiceIml());
         //调用用户查询方法获取用户信息
         List<User> userList = userService.getUserList();

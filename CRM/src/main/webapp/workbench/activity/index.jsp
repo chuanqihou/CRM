@@ -23,30 +23,37 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 	<script type="text/javascript">
 
 	$(function(){
+		//时间插件
+		$(".time").datetimepicker({
+			minView: "month",
+			language:  'zh-CN',
+			format: 'yyyy-mm-dd',
+			autoclose: true,
+			todayBtn: true,
+			pickerPosition: "bottom-left"
+		});
+
+		//点击市场活动后页面加载市场活动列表
+		pageList(1,2);
+
 		//点击调用模态窗口
 		$("#addBtn").click(function (){
-			//时间插件
-			$(".time").datetimepicker({
-				minView: "month",
-				language:  'zh-CN',
-				format: 'yyyy-mm-dd',
-				autoclose: true,
-				todayBtn: true,
-				pickerPosition: "bottom-left"
-			});
-			//加载用户信息
+			//加载用户信息下拉框
 			$.ajax({
 				url : "workbench/activity/getUserList.do",
 				type : "get",
 				dataType : "json",
 				success : function (data){
+					//拼接字符串
 					var html = "<option>---请选择---</option>"
 					$.each(data,function (i,n){
 						html+="<option value='"+n.id+"'>"+n.name+"</option>"
 					})
-					//将用户姓名添加至下拉框
+					//将用户姓名添加至下拉框值
 					$("#create-marketActivityOwner").html(html);
+					//从Session作用域中取出用户Id（使用EL表达式）
 					var id = "${user.id}";
+					//将用户Id添加至下拉框的value值
 					$("#create-marketActivityOwner").val(id);
 					//打开模态窗口
 					$("#createActivityModal").modal("show");
@@ -80,9 +87,6 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 				}
 			})
 		});
-
-		//点击市场活动后页面加载市场活动列表
-		pageList(1,2);
 
 		//点击查询按钮
 		$("#searchBtn").click(function (){
@@ -133,6 +137,8 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 						dataType : "json",
 						success : function (data){
 							if (data.success){
+								//删除成功，取消全选框
+								$("#qx").prop("checked",false);
 								//删除成功，刷新市场活动列表
 								pageList(1,2);
 							}else {
@@ -145,17 +151,17 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 			}
 		});
 
-		//点击修改市场活动信息
+		//点击修改市场活动信息模板
 		$("#editBtn").click(function (){
-			//获取选中需要删除市场活动信息数量
+			//获取选中需要修改市场活动信息数量
 			var $xz = $("input[name=xz]:checked");
 			if ($xz.length==0){
 				alert("请选择需要修改的市场活动！")
 			}else if ($xz.length>=2){
 				alert("只能选择一条记录进行修改！")
 			}else {
+				//获取选择需要更新的市场活动Id
 				var id = $xz.val();
-
 				$.ajax({
 					url : "workbench/activity/getUserListAndActivity.do",
 					data : {
@@ -164,10 +170,17 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 					type : "get",
 					dataType : "json",
 					success : function (data){
+						//拼接字符串
 						var html = "";
 						$.each(data.uList,function (i,n){
-							html+="<option id='"+n.id+"'>"+n.name+"</option>";
+							//如果用户信息表中的用户Id等于选中的市场活动信息表中所有者Id则选中
+                            if(data.a.owner==n.id){
+                                html+="<option selected value='"+n.id+"'>"+n.name+"</option>";
+                            }else {
+                                html+="<option value='"+n.id+"'>"+n.name+"</option>";
+                            }
 						})
+						//将该市场活动中的信息加载到页面中
 						$("#edit-marketActivityOwner").html(html);
 						$("#edit-describe").val(data.a.description);
 						$("#edit-cost").val(data.a.cost);
@@ -175,15 +188,16 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 						$("#edit-startTime").val(data.a.startDate);
 						$("#edit-marketActivityName").val(data.a.name);
 						$("#edit-id").val(data.a.id);
-
+						//展示修改页面
 						$("#editActivityModal").modal("show");
 					}
 				})
 			}
 		});
 
+		//点击更新按钮执行操作
 		$("#updateBtn").click(function(){
-			//ajax局部刷新更新操作
+			//ajax局部刷新更新操作 参数：需要更新的所有信息
 			$.ajax({
 				url : "workbench/activity/update.do",
 				data : {
@@ -199,8 +213,9 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 				dataType: "json",
 				success : function (data){
 					if (data.success){
-						// $("#activitySaveForm")[0].reset();
+						//更新成功，隐藏页面模板
 						$("#editActivityModal").modal("hide");
+						//刷新市场活动信息列表
 						pageList(1,2);
 					}else {
 						alert("修改市场活动失败！")
@@ -211,7 +226,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 	});
 
 
-	//获取市场活动信息列表并分页
+	//根据条件获取市场活动信息列表并分页
 	function pageList(pageNo,pageSize){
 		//将隐藏域中的查询条件重新展示
 		$("#search-name").val($.trim($("#hidden-name").val()));
@@ -484,58 +499,12 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 						</tr>
 					</thead>
 					<tbody id="activityBody">
-<%--						<tr class="active">
-							<td><input type="checkbox" /></td>
-							<td><a style="text-decoration: none; cursor: pointer;" onclick="window.location.href='workbench/activity/detail.jsp';">发传单</a></td>
-                            <td>zhangsan</td>
-							<td>2020-10-10</td>
-							<td>2020-10-20</td>
-						</tr>
-                        <tr class="active">
-                            <td><input type="checkbox" /></td>
-                            <td><a style="text-decoration: none; cursor: pointer;" onclick="window.location.href='detail.jsp';">发传单</a></td>
-                            <td>zhangsan</td>
-                            <td>2020-10-10</td>
-                            <td>2020-10-20</td>
-                        </tr>--%>
 					</tbody>
 				</table>
 			</div>
 			
 			<div style="height: 50px; position: relative;top: 30px;">
 				<div id="activityPage"></div>
-<%--				<div>
-					<button type="button" class="btn btn-default" style="cursor: default;">共<b>50</b>条记录</button>
-				</div>
-				<div class="btn-group" style="position: relative;top: -34px; left: 110px;">
-					<button type="button" class="btn btn-default" style="cursor: default;">显示</button>
-					<div class="btn-group">
-						<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-							10
-							<span class="caret"></span>
-						</button>
-						<ul class="dropdown-menu" role="menu">
-							<li><a href="#">20</a></li>
-							<li><a href="#">30</a></li>
-						</ul>
-					</div>
-					<button type="button" class="btn btn-default" style="cursor: default;">条/页</button>
-				</div>--%>
-<%--				<div style="position: relative;top: -88px; left: 285px;">
-					<nav>
-						<ul class="pagination">
-							<li class="disabled"><a href="#">首页</a></li>
-							<li class="disabled"><a href="#">上一页</a></li>
-							<li class="active"><a href="#">1</a></li>
-							<li><a href="#">2</a></li>
-							<li><a href="#">3</a></li>
-							<li><a href="#">4</a></li>
-							<li><a href="#">5</a></li>
-							<li><a href="#">下一页</a></li>
-							<li class="disabled"><a href="#">末页</a></li>
-						</ul>
-					</nav>
-				</div>--%>
 			</div>
 			
 		</div>

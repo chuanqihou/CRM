@@ -57,9 +57,9 @@
         <url-pattern>/workbench/activity/pageList.do</url-pattern>
         <!--  根据选中条件删除市场活动信息      -->
         <url-pattern>/workbench/activity/delete.do</url-pattern>
-
+        <!--根据市场活动Id查询市场活动信息；查询所有用户信息；目的：获取修改市场活动信息模板页面中的数据-->
         <url-pattern>/workbench/activity/getUserListAndActivity.do</url-pattern>
-
+        <!--    点击更新按钮后将更新数据添加到数据库中，条件根据市场活动信息Id    -->
         <url-pattern>/workbench/activity/update.do</url-pattern>
 
     </servlet-mapping>
