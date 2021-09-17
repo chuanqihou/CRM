@@ -61,6 +61,16 @@
         <url-pattern>/workbench/activity/getUserListAndActivity.do</url-pattern>
         <!--    点击更新按钮后将更新数据添加到数据库中，条件根据市场活动信息Id    -->
         <url-pattern>/workbench/activity/update.do</url-pattern>
+        <!--    展示市场活动的详细信息（仅市场活动信息）    -->
+        <url-pattern>/workbench/activity/detail.do</url-pattern>
+        <!--    展示市场活动的备注信息    -->
+        <url-pattern>/workbench/activity/getRemarkListById.do</url-pattern>
+        <!--    根据Id删除备注信息    -->
+        <url-pattern>/workbench/activity/deleteRemark.do</url-pattern>
+        <!--    新建和保存备注信息    -->
+        <url-pattern>/workbench/activity/saveRemark.do</url-pattern>
+        <!--    根据Id更新备注信息    -->
+        <url-pattern>/workbench/activity/updateRemark.do</url-pattern>
 
     </servlet-mapping>
 

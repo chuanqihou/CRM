@@ -2,7 +2,9 @@ package com.chuanqihou.crm.workbench.service;
 
 import com.chuanqihou.crm.vo.PaginationVo;
 import com.chuanqihou.crm.workbench.domain.Activity;
+import com.chuanqihou.crm.workbench.domain.ActivityRemark;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -27,4 +29,14 @@ public interface ActivityService {
 
     //根据条件更新市场活动信息
     boolean update(Activity activity);
+
+    Activity detail(String id);
+
+    List<ActivityRemark> getRemarkListById(String id);
+
+    boolean deleteRemark(String id);
+
+    boolean saveRemark(ActivityRemark ar);
+
+    boolean updateRemark(ActivityRemark activityRemark);
 }

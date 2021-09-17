@@ -34,7 +34,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 		});
 
 		//点击市场活动后页面加载市场活动列表
-		pageList(1,2);
+		pageList(1,5);
 
 		//点击调用模态窗口
 		$("#addBtn").click(function (){
@@ -80,7 +80,8 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 					if (data.success){
 						$("#activitySaveForm")[0].reset();
 						$("#createActivityModal").modal("hide");
-						pageList(1,2);
+						//刷新列表，跳转到第一页，维持用户选择每页展示数据条数
+						pageList(1,$("#activityPage").bs_pagination('getOption', 'rowsPerPage'));
 					}else {
 						alert("添加市场活动失败！")
 					}
@@ -96,7 +97,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 			$("#hidden-startDate").val($.trim($("#search-startDate").val()));
 			$("#hidden-endDate").val($.trim($("#search-endDate").val()));
 			//页面加载市场活动列表
-			pageList(1,2);
+			pageList(1,5);
 		});
 
 		//获得全选框Jquery对象
@@ -139,8 +140,8 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 							if (data.success){
 								//删除成功，取消全选框
 								$("#qx").prop("checked",false);
-								//删除成功，刷新市场活动列表
-								pageList(1,2);
+								//刷新列表，跳转到第一页，维持用户选择每页展示数据条数
+								pageList(1,$("#activityPage").bs_pagination('getOption', 'rowsPerPage'));
 							}else {
 								//删除失败提示
 								alert("删除市场活动失败！")
@@ -215,8 +216,11 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 					if (data.success){
 						//更新成功，隐藏页面模板
 						$("#editActivityModal").modal("hide");
-						//刷新市场活动信息列表
-						pageList(1,2);
+						//更新成功，取消全选框
+						$("#qx").prop("checked",false);
+						//刷新列表，维持用户选择每页展示数据条数以及维持在当前页面
+						pageList($("#activityPage").bs_pagination('getOption', 'currentPage')
+								,$("#activityPage").bs_pagination('getOption', 'rowsPerPage'));
 					}else {
 						alert("修改市场活动失败！")
 					}
@@ -256,7 +260,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 					//将数据拼接
 					html+='<tr class="active">';
 					html+='<td><input type="checkbox" name="xz" value="'+n.id+'" /></td>';
-					html+='<td><a style="text-decoration: none; cursor: pointer;" onclick="window.location.href=\'workbench/activity/detail.jsp\';">'+n.name+'</a></td>';
+					html+='<td><a style="text-decoration: none; cursor: pointer;" onclick="window.location.href=\'workbench/activity/detail.do?id='+n.id+'\';">'+n.name+'</a></td>';
 					html+='<td>'+n.owner+'</td>';
 					html+='<td>'+n.startDate+'</td>';
 					html+='<td>'+n.endDate+'</td>';
@@ -337,11 +341,11 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 						<div class="form-group">
 							<label for="create-startTime" class="col-sm-2 control-label">开始日期</label>
 							<div class="col-sm-10" style="width: 300px;">
-								<input type="text" class="form-control time" id="create-startTime" readonly>
+								<input type="text" class="form-control time" id="create-startTime">
 							</div>
 							<label for="create-endTime" class="col-sm-2 control-label">结束日期</label>
 							<div class="col-sm-10" style="width: 300px;">
-								<input type="text" class="form-control time" id="create-endTime" readonly>
+								<input type="text" class="form-control time" id="create-endTime">
 							</div>
 						</div>
                         <div class="form-group">
@@ -398,11 +402,11 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 						<div class="form-group">
 							<label for="edit-startTime" class="col-sm-2 control-label">开始日期</label>
 							<div class="col-sm-10" style="width: 300px;">
-								<input type="text" class="form-control time" id="edit-startTime" readonly>
+								<input type="text" class="form-control time" id="edit-startTime">
 							</div>
 							<label for="edit-endTime" class="col-sm-2 control-label">结束日期</label>
 							<div class="col-sm-10" style="width: 300px;">
-								<input type="text" class="form-control time" id="edit-endTime" readonly>
+								<input type="text" class="form-control time" id="edit-endTime">
 							</div>
 						</div>
 						
@@ -465,13 +469,13 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 				  <div class="form-group">
 				    <div class="input-group">
 				      <div class="input-group-addon">开始日期</div>
-					  <input class="form-control" type="text" id="search-startDate" />
+					  <input class="form-control time" type="text" id="search-startDate" />
 				    </div>
 				  </div>
 				  <div class="form-group">
 				    <div class="input-group">
 				      <div class="input-group-addon">结束日期</div>
-					  <input class="form-control" type="text" id="search-endDate">
+					  <input class="form-control time" type="text" id="search-endDate">
 				    </div>
 				  </div>
 				  

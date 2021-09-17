@@ -7,6 +7,7 @@ import com.chuanqihou.crm.vo.PaginationVo;
 import com.chuanqihou.crm.workbench.dao.ActivityDao;
 import com.chuanqihou.crm.workbench.dao.ActivityRemarkDao;
 import com.chuanqihou.crm.workbench.domain.Activity;
+import com.chuanqihou.crm.workbench.domain.ActivityRemark;
 import com.chuanqihou.crm.workbench.service.ActivityService;
 
 import java.util.HashMap;
@@ -118,6 +119,79 @@ public class ActivityServiceImpl implements ActivityService {
         boolean flag = true;
         //判断更新状态
         if (activityDao.update(activity)!=1){
+            flag = false;
+        }
+        //返回结果
+        return flag;
+    }
+
+    /**
+     * 查询市场活动详细信息
+     * @param id
+     * @return
+     */
+    @Override
+    public Activity detail(String id) {
+        Activity a = activityDao.detail(id);
+        return a;
+    }
+
+    /**
+     * 查询备注信息
+     * @param id
+     * @return
+     */
+    @Override
+    public List<ActivityRemark> getRemarkListById(String id) {
+        List<ActivityRemark> arList = activityRemarkDao.getRemarkListById(id);
+        return arList;
+    }
+
+    /**
+     * 删除备注信息
+     * @param id
+     * @return
+     */
+    @Override
+    public boolean deleteRemark(String id) {
+        //定义默认值
+        boolean flag = true;
+        //判断更新状态
+        if (activityRemarkDao.deleteRemark(id)!=1){
+            flag = false;
+        }
+        //返回结果
+        return flag;
+    }
+
+    /**
+     * 保存备注信息
+     * @param ar  ActivityRemark对象
+     * @return
+     */
+    @Override
+    public boolean saveRemark(ActivityRemark ar) {
+        //定义默认值
+        boolean flag = true;
+        //判断更新状态
+        if (activityRemarkDao.saveRemark(ar)!=1){
+            flag = false;
+        }
+        //返回结果
+        return flag;
+    }
+
+    /**
+     * 修改备注信息
+     * @param activityRemark
+     * @return
+     */
+    @Override
+    public boolean updateRemark(ActivityRemark activityRemark) {
+        //定义默认值
+        boolean flag = true;
+        //判断更新状态
+        if (activityRemarkDao.updateRemark(activityRemark)!=1){
             flag = false;
         }
         //返回结果

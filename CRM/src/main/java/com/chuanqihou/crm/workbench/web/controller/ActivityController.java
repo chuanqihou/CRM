@@ -6,6 +6,7 @@ import com.chuanqihou.crm.settings.service.impl.UserServiceIml;
 import com.chuanqihou.crm.utils.*;
 import com.chuanqihou.crm.vo.PaginationVo;
 import com.chuanqihou.crm.workbench.domain.Activity;
+import com.chuanqihou.crm.workbench.domain.ActivityRemark;
 import com.chuanqihou.crm.workbench.service.ActivityService;
 import com.chuanqihou.crm.workbench.service.impl.ActivityServiceImpl;
 
@@ -53,7 +54,145 @@ public class ActivityController extends HttpServlet {
         //根据条件更新市场活动信息
         }else if("/workbench/activity/update.do".equals(path)){
             update(request,response);
+        //展示市场活动的详细信息（仅市场活动信息）
+        }else if ("/workbench/activity/detail.do".equals(path)){
+            detail(request,response);
+        //展示市场活动的备注信息
+        }else if ("/workbench/activity/getRemarkListById.do".equals(path)){
+            getRemarkListById(request,response);
+        //根据Id删除备注信息
+        }else if ("/workbench/activity/deleteRemark.do".equals(path)){
+            deleteRemark(request,response);
+        //新建和保存备注信息
+        }else if ("/workbench/activity/saveRemark.do".equals(path)){
+            saveRemark(request,response);
+        //根据Id更新备注信息
+        }else if ("/workbench/activity/updateRemark.do".equals(path)){
+            updataRemark(request,response);
         }
+    }
+
+    /**
+     * 根据市场活动Id更新备注信息
+     * @param request   请求
+     * @param response  响应
+     */
+    private void updataRemark(HttpServletRequest request, HttpServletResponse response) {
+        //获取市场活动信息Service业务逻辑对象（反射机制）
+        ActivityService activityService = (ActivityService) ServiceFactory.getService(new ActivityServiceImpl());
+        //获取参数
+        String id = request.getParameter("id");
+        String noteContent = request.getParameter("noteContent");
+        //获取时间
+        String editTime = DateTimeUtil.getSysTime();
+        //获取当前用户信息
+        String editBy = ((User)request.getSession().getAttribute("user")).getName();
+        //将修改状态赋值为1
+        String editFlag = "1";
+        //创建ActivityRemark对象进行数据封装
+        ActivityRemark activityRemark = new ActivityRemark();
+        activityRemark.setId(id);
+        activityRemark.setNoteContent(noteContent);
+        activityRemark.setEditTime(editTime);
+        activityRemark.setEditBy(editBy);
+        activityRemark.setEditFlag(editFlag);
+        //调用dao层，传入ActivityRemark对象条件并返回状态信息
+        boolean flag = activityService.updateRemark(activityRemark);
+        //将状态信息以及ActivityRemark对象封装成map集合返回
+        Map<String, Object> map = new HashMap<>();
+        map.put("success",flag);
+        map.put("ar",activityRemark);
+        //将map集合转换成json对象传入前端
+        PrintJson.printJsonObj(response,map);
+    }
+
+    /**
+     * 根据市场活动Id插入备注信息
+     * @param request   请求
+     * @param response  响应
+     */
+    private void saveRemark(HttpServletRequest request, HttpServletResponse response) {
+        //获取市场活动信息Service业务逻辑对象（反射机制）
+        ActivityService activityService = (ActivityService) ServiceFactory.getService(new ActivityServiceImpl());
+        //获取参数信息
+        String noteContent = request.getParameter("noteContent");
+        String activityId = request.getParameter("activityId");
+        //生成备注Id
+        String id = UUIDUtil.getUUID();
+        //获取时间
+        String createTime = DateTimeUtil.getSysTime();
+        //从Session域中获取当前登录用户
+        String createdBy = ((User)request.getSession().getAttribute("user")).getName();
+        //将修改状态赋值为0
+        String editFlag = "0";
+        //创建ActivityRemark对象进行数据封装
+        ActivityRemark ar = new ActivityRemark();
+        ar.setCreateBy(createdBy);
+        ar.setActivityId(activityId);
+        ar.setId(id);
+        ar.setCreateTime(createTime);
+        ar.setEditFlag(editFlag);
+        ar.setNoteContent(noteContent);
+        //调用dao层，传入ActivityRemark对象条件并返回状态信息
+        boolean flag = activityService.saveRemark(ar);
+        //将状态信息以及ActivityRemark对象封装成map集合返回
+        Map<String, Object> map = new HashMap<>();
+        map.put("success",flag);
+        map.put("ar",ar);
+        //将map集合转换成json对象传入前端
+        PrintJson.printJsonObj(response,map);
+    }
+
+    /**
+     * 根据市场活动Id删除备注信息
+     * @param request   请求
+     * @param response  响应
+     */
+    private void deleteRemark(HttpServletRequest request, HttpServletResponse response) {
+        //获取市场活动信息Service业务逻辑对象（反射机制）
+        ActivityService activityService = (ActivityService) ServiceFactory.getService(new ActivityServiceImpl());
+        //获取参数
+        String id = request.getParameter("id");
+        //调用dao层，返回状态信息
+        boolean flag = activityService.deleteRemark(id);
+        //将状态信息转换成json对象，传入前端
+        PrintJson.printJsonFlag(response,"success",flag);
+    }
+
+    /**
+     * 根据市场活动Id查询备注信息（多条）
+     * @param request   请求
+     * @param response  响应
+     */
+    private void getRemarkListById(HttpServletRequest request, HttpServletResponse response) {
+        //获取市场活动信息Service业务逻辑对象（反射机制）
+        ActivityService activityService = (ActivityService) ServiceFactory.getService(new ActivityServiceImpl());
+        //从请求转发域中获取市场活动Id
+        String activityId = request.getParameter("activityId");
+        //调用dao层，根据Id获取所有备注信息，封装成List集合
+        List<ActivityRemark> arList = activityService.getRemarkListById(activityId);
+        //将数据转换为json数据，并将其传入前端
+        PrintJson.printJsonObj(response,arList);
+    }
+
+    /**
+     * 展示市场活动的详细信息（仅市场活动信息）
+     * @param request   请求
+     * @param response  响应
+     * @throws ServletException
+     * @throws IOException
+     */
+    private void detail(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        //获取市场活动信息Service业务逻辑对象（反射机制）
+        ActivityService activityService = (ActivityService) ServiceFactory.getService(new ActivityServiceImpl());
+        //获取参数
+        String id = request.getParameter("id");
+        //调用Dao层传入Id,返回Activity对象
+        Activity activity = activityService.detail(id);
+        //将Activity对象存入请求域中
+        request.setAttribute("a",activity);
+        //请求转发跳转到市场活动详细页
+        request.getRequestDispatcher("/workbench/activity/detail.jsp").forward(request,response);
     }
 
     /**
