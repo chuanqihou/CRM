@@ -89,6 +89,7 @@
 
     </update>
 
+    <!--    获取市场活动详细信息-->
     <select id="detail" resultType="com.chuanqihou.crm.workbench.domain.Activity">
         select
             a.id,
@@ -104,6 +105,47 @@
             a.editBy
 
         from tbl_activity a join tbl_user u on a.owner=u.id where a.id=#{id}
+    </select>
+
+    <!--    根据线索Id,线索表联合用户表查询出所有者姓名，市场活动表联合市场活动线索关系表查询出市场活动线索关系表ID-->
+    <select id="getActivityByClueID" resultType="com.chuanqihou.crm.workbench.domain.Activity">
+        select
+           car.id as id,
+           a.name,
+           a.startDate,
+           a.endDate,
+           u.name as owner
+        from tbl_activity a join tbl_user u on a.owner=u.id
+        join tbl_clue_activity_relation car on a.id=car.activityId
+        where car.clueId=#{id}
+    </select>
+
+    <!--    获取市场活动信息（除线索已关联的）-->
+    <select id="getActivityByNameByClueID" resultType="com.chuanqihou.crm.workbench.domain.Activity">
+        select
+            a.id,
+            a.name,
+            a.startDate,
+            a.endDate,
+            u.name as owner
+        from tbl_activity a join tbl_user u on a.owner=u.id
+        where a.name like '%' #{aname} '%' and a.id not in(
+            select activityId from tbl_clue_activity_relation where clueId=#{clueId}
+        )
+    </select>
+
+    <!--    根据市场活动名称模糊查询市场活动信息-->
+    <select id="getActivityListByName" resultType="com.chuanqihou.crm.workbench.domain.Activity">
+        select
+            a.id,
+            a.name,
+            a.startDate,
+            a.endDate,
+            u.name as owner
+        from tbl_activity a
+                 join tbl_user u
+                      on a.owner=u.id
+        where a.name like '%' #{aname} '%'
     </select>
 
 </mapper>

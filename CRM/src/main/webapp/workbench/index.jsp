@@ -40,8 +40,77 @@
 		
 		
 		window.open("workbench/main/index.html","workareaFrame");
+
+		$("#confirmPwd").blur(function (){
+			if ($("#newPwd").val()==""){
+				$("#newPwdSpan").html("请输入密码")
+			}else {
+				var newPwd = $("#newPwd").val();
+				var confirmPwd = $("#confirmPwd").val();
+				if (newPwd!=confirmPwd){
+					$("#newPwdSpan").html("两次密码不同，请重新输入！")
+				}
+			}
+		})
+
+		$("#newPwd").blur(function (){
+			if ($("#newPwd").val()==""){
+				$("#newPwdSpan").html("请输入密码")
+			}else {
+				var newPwd = $("#newPwd").val();
+				var confirmPwd = $("#confirmPwd").val();
+				if (newPwd!=confirmPwd){
+					$("#newPwdSpan").html("两次密码不同，请重新输入！")
+				}
+			}
+		})
+
+		$("#confirmPwd").focus(function (){
+			$("#newPwdSpan").html("")
+		})
+		$("#newPwd").focus(function (){
+			$("#newPwdSpan").html("")
+		})
+
+		$("#updatePwd").click(function (){
+			$("#confirmPwd")[0].focus();
+			$("#confirmPwd")[0].blur();
+			$("#newPwd")[0].focus();
+			$("#newPwd")[0].blur();
+			if ($("#newPwdSpan").html() ==""){
+				updatePwdAjax()
+			}
+		})
 		
 	});
+
+	function updatePwdAjax(){
+		var userId = "${user.id}";
+		var odlPwd = $.trim($("#oldPwd").val());
+		var newPwd = $.trim($("#newPwd").val());
+
+		$.ajax({
+			url : "setting/user/updatePwd.do",
+			data : {
+				"userId" : userId,
+				"oldPwd" : odlPwd,
+				"newPwd" : newPwd
+			},
+			type : "post",
+			dataType : "json",
+			success : function (data){
+				if (data.checkingPwd){
+					if (data.updatePwd){
+						self.location.href="/crm/login.jsp"
+					}else {
+						alert("修改失败！请联系管理员")
+					}
+				}else {
+					$("#oldPwdSpan").html("原密码错误！")
+				}
+			}
+		})
+	}
 	
 </script>
 
@@ -60,12 +129,12 @@
 				</div>
 				<div class="modal-body">
 					<div style="position: relative; left: 40px;">
-						姓名：<b>张三</b><br><br>
-						登录帐号：<b>zhangsan</b><br><br>
+						姓名：<b>${user.name}</b><br><br>
+						登录帐号：<b>${user.loginAct}</b><br><br>
 						组织机构：<b>1005，市场部，二级部门</b><br><br>
-						邮箱：<b>zhangsan@bjpowernode.com</b><br><br>
-						失效时间：<b>2017-02-14 10:10:10</b><br><br>
-						允许访问IP：<b>127.0.0.1,192.168.100.2</b>
+						邮箱：<b>${user.email}</b><br><br>
+						失效时间：<b>${user.expireTime}</b><br><br>
+						允许访问IP：<b>${user.allowIps}</b>
 					</div>
 				</div>
 				<div class="modal-footer">
@@ -91,6 +160,7 @@
 							<label for="oldPwd" class="col-sm-2 control-label">原密码</label>
 							<div class="col-sm-10" style="width: 300px;">
 								<input type="text" class="form-control" id="oldPwd" style="width: 200%;">
+								<span id="oldPwdSpan" style="font-size: 12px;color: red"></span>
 							</div>
 						</div>
 						
@@ -105,13 +175,14 @@
 							<label for="confirmPwd" class="col-sm-2 control-label">确认密码</label>
 							<div class="col-sm-10" style="width: 300px;">
 								<input type="text" class="form-control" id="confirmPwd" style="width: 200%;">
+								<span id="newPwdSpan" style="font-size: 12px;color: red"></span>
 							</div>
 						</div>
 					</form>
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
-					<button type="button" class="btn btn-primary" data-dismiss="modal" onclick="window.location.href='login.jsp';">更新</button>
+					<button type="button" class="btn btn-primary" id="updatePwd">更新</button>
 				</div>
 			</div>
 		</div>
@@ -140,7 +211,7 @@
 	
 	<!-- 顶部 -->
 	<div id="top" style="height: 50px; background-color: #3C3C3C; width: 100%;">
-		<div style="position: absolute; top: 5px; left: 0px; font-size: 30px; font-weight: 400; color: white; font-family: 'times new roman'">CRM &nbsp;<span style="font-size: 12px;">&copy;2017&nbsp;动力节点</span></div>
+		<div style="position: absolute; top: 5px; left: 0px; font-size: 30px; font-weight: 400; color: white; font-family: 'times new roman'">CRM &nbsp;<span style="font-size: 12px;">&copy;2021&nbsp;传奇后</span></div>
 		<div style="position: absolute; top: 15px; right: 15px;">
 			<ul>
 				<li class="dropdown user-dropdown">
@@ -171,11 +242,11 @@
 				<li class="liClass"><a href="javascript:void(0);" target="workareaFrame"><span class="glyphicon glyphicon-time"></span> 审批</a></li>
 				<li class="liClass"><a href="javascript:void(0);" target="workareaFrame"><span class="glyphicon glyphicon-user"></span> 客户公海</a></li>
 				<li class="liClass"><a href="workbench/activity/index.jsp" target="workareaFrame"><span class="glyphicon glyphicon-play-circle"></span> 市场活动</a></li>
-				<li class="liClass"><a href="clue/index.html" target="workareaFrame"><span class="glyphicon glyphicon-search"></span> 线索（潜在客户）</a></li>
-				<li class="liClass"><a href="customer/index.html" target="workareaFrame"><span class="glyphicon glyphicon-user"></span> 客户</a></li>
-				<li class="liClass"><a href="contacts/index.html" target="workareaFrame"><span class="glyphicon glyphicon-earphone"></span> 联系人</a></li>
-				<li class="liClass"><a href="transaction/index.html" target="workareaFrame"><span class="glyphicon glyphicon-usd"></span> 交易（商机）</a></li>
-				<li class="liClass"><a href="visit/index.html" target="workareaFrame"><span class="glyphicon glyphicon-phone-alt"></span> 售后回访</a></li>
+				<li class="liClass"><a href="workbench/clue/index.jsp" target="workareaFrame"><span class="glyphicon glyphicon-search"></span> 线索（潜在客户）</a></li>
+				<li class="liClass"><a href="workbench/customer/index.jsp" target="workareaFrame"><span class="glyphicon glyphicon-user"></span> 客户</a></li>
+				<li class="liClass"><a href="workbench/contacts/index.jsp" target="workareaFrame"><span class="glyphicon glyphicon-earphone"></span> 联系人</a></li>
+				<li class="liClass"><a href="workbench/transaction/index.jsp" target="workareaFrame"><span class="glyphicon glyphicon-usd"></span> 交易（商机）</a></li>
+				<li class="liClass"><a href="workbench/visit/index.html" target="workareaFrame"><span class="glyphicon glyphicon-phone-alt"></span> 售后回访</a></li>
 				<li class="liClass">
 					<a href="#no2" class="collapsed" data-toggle="collapse"><span class="glyphicon glyphicon-stats"></span> 统计图表</a>
 					<ul id="no2" class="nav nav-pills nav-stacked collapse">

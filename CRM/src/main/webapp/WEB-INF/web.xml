@@ -25,6 +25,10 @@
         <url-pattern>*.do</url-pattern>
     </filter-mapping>
 
+<!--    监听器-->
+    <listener>
+        <listener-class>com.chuanqihou.crm.web.listener.SysInitListener</listener-class>
+    </listener>
 
 <!--  欢迎页-->
     <welcome-file-list>
@@ -34,19 +38,22 @@
 <!--  用户Servlet-->
     <servlet>
         <servlet-name>UserController</servlet-name>
-        <servlet-class>com.chuanqihou.crm.settings.web.controller.UserController</servlet-class>
+        <servlet-class>com.chuanqihou.crm.settings.web.controller.UserServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>UserController</servlet-name>
         <!--  登录验证  -->
         <url-pattern>/setting/user/login.do</url-pattern>
+        <!--    修改密码    -->
+        <url-pattern>/setting/user/updatePwd.do</url-pattern>
     </servlet-mapping>
 
 <!--  市场活动Servlet-->
     <servlet>
         <servlet-name>ActivityController</servlet-name>
-        <servlet-class>com.chuanqihou.crm.workbench.web.controller.ActivityController</servlet-class>
+        <servlet-class>com.chuanqihou.crm.workbench.web.controller.ActivityServlet</servlet-class>
     </servlet>
+
     <servlet-mapping>
         <servlet-name>ActivityController</servlet-name>
         <!--  查询所有用户信息  -->
@@ -74,6 +81,60 @@
 
     </servlet-mapping>
 
+<!--    线索Servlet-->
+    <servlet>
+        <servlet-name>ClueServlet</servlet-name>
+        <servlet-class>com.chuanqihou.crm.workbench.web.controller.ClueServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>ClueServlet</servlet-name>
+        <!--    点击创建线索按钮加载用户信息展示在下拉框的Servlet    -->
+        <url-pattern>/workbench/clue/getUserList.do</url-pattern>
+        <!--    保存（插入）线索信息    -->
+        <url-pattern>/workbench/clue/save.do</url-pattern>
+        <!--        根据条件获取线索信息列表并分页-->
+        <url-pattern>/workbench/clue/pageList.do</url-pattern>
+        <!--        根据线索Id更新线索信息    -->
+        <url-pattern>/workbench/clue/update.do</url-pattern>
+        <!--    根据Id删除线索信息（可批量删除）    -->
+        <url-pattern>/workbench/clue/delete.do</url-pattern>
+        <!--     查询所有用户信息、以及一条线索信息   -->
+        <url-pattern>/workbench/clue/getUserListAndClue.do</url-pattern>
+        <!--根据线索Id查询线索信息并将其添加至共享请求作用域中，通过请求转发跳转到线索详细页-->
+        <url-pattern>/workbench/clue/detail.do</url-pattern>
+        <!--获取市场活动信息（除线索已关联的）-->
+        <url-pattern>/workbench/clue/getActivityListByClueId.do</url-pattern>
+        <!--取消线索与某一条市场活动信息的关联-->
+        <url-pattern>/workbench/clue/unbund.do</url-pattern>
+        <!--    点击关联按钮    -->
+        <url-pattern>/workbench/clue/bund.do</url-pattern>
+        <!--        获取该条线索的所有备注信息-->
+        <url-pattern>/workbench/clue/getRemarkListById.do</url-pattern>
+        <!--        新建一条备注信息-->
+        <url-pattern>/workbench/clue/saveRemark.do</url-pattern>
+        <!--         获取市场活动信息（除线索已关联的）-->
+        <url-pattern>/workbench/clue/getActivityListByNameByClueId.do</url-pattern>
+        <!--     获取线索备注信息   -->
+        <url-pattern>/workbench/clue/getActivityListByName.do</url-pattern>
+        <!--        将线索转换成客户，联系人等-->
+        <url-pattern>/workbench/clue/convert.do</url-pattern>
+        <!--        删除线索备注信息-->
+        <url-pattern>/workbench/clue/deleteRemark.do</url-pattern>
+        <!--      更新线索备注信息  -->
+        <url-pattern>/workbench/clue/updateRemark.do</url-pattern>
+
+    </servlet-mapping>
+
+<!--    客户Servlet-->
+    <servlet>
+        <servlet-name>CustomerServlet</servlet-name>
+        <servlet-class>com.chuanqihou.crm.workbench.web.controller.CustomerServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>CustomerServlet</servlet-name>
+        <url-pattern>/workbench/customer/pageList.do</url-pattern>
+    </servlet-mapping>
 
 </web-app>
 

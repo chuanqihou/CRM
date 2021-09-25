@@ -57,7 +57,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
             $(this).children("div").children("div").hide();
         })
 
-        //加载备注
+        //加载市场活动备注信息
         showRemarkList();
 
         //新建和保存备注信息
@@ -72,8 +72,8 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
                 },
                 type : "post",
                 dataType : "json",
+                //返回状态信息以及市场活动信息，
                 success : function (data){
-                    //返回状态信息以及市场活动信息，
                     if (data.success){
                         //清空页面之前新建完成后的缓存备注信息
                         $("#remark").val("");
@@ -192,7 +192,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
                 })
         });
 
-        //点击更新按钮执行操作
+        //点击更新市场活动按钮执行操作
         $("#updateBtn").click(function(){
             //ajax局部刷新更新操作 参数：需要更新的所有信息
             $.ajax({
@@ -212,6 +212,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
                     if (data.success){
                         //更新成功，隐藏页面模板
                         $("#editActivityModal").modal("hide");
+                        //刷新页面
                         self.location.href="/crm/workbench/activity/detail.do?id="+"${a.id}"
                     }else {
                         alert("修改市场活动失败！")
@@ -227,15 +228,17 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 		$.ajax({
 			url : "workbench/activity/getRemarkListById.do",
 			data : {
+			    //参数：市场活动Id
 				"activityId" : "${a.id}"
 			},
 			type : "get",
 			dataType : "json",
 			success : function (data){
+			    //拼接字符串
 				var html = "";
 				$.each(data,function (i,n){
 					html+='<div id="'+n.id+'" class="remarkDiv" style="height: 60px;">';
-					html+='<img title="zhangsan" src="image/user-thumbnail.png" style="width: 30px; height:30px;">';
+					html+='<img title="'+(n.editFlag==0?n.createBy:n.editBy)+'" src="image/user-thumbnail.png" style="width: 30px; height:30px;">';
 					html+='<div style="position: relative; top: -40px; left: 40px;" >';
 					html+='<h5 id="e'+n.id+'">'+n.noteContent+'</h5>';
 					html+='<font color="gray">市场活动</font> <font color="gray">-</font> <b>'+ "${a.name}" +'</b> <small style="color: gray;" id="s'+n.id+'"> '+(n.editFlag==0?n.createTime:n.editTime)+' 由'+(n.editFlag==0?n.createBy+'创建':n.editBy+'修改')+'</small>';
@@ -247,6 +250,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 					html+='</div>';
                     html+='</div>';
 				})
+                //将备注信息添加到Id为remarkDiv之前
                 $("#remarkDiv").before(html);
             }
 		})
@@ -258,10 +262,12 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
             $.ajax({
                 url : "workbench/activity/deleteRemark.do",
                 data : {
+                    //参数：需要删除备注信息的Id
                     "id" : id
                 },
                 type : "post",
                 dataType : "json",
+                //返回删除状态信息
                 success : function (data){
                     if (data.success){
                         $("#"+id).remove();

@@ -14,6 +14,14 @@
 	<select id="login" parameterType="map" resultType="com.chuanqihou.crm.settings.domain.User">
         select *from tbl_user where loginAct=#{loginAct} and loginPwd=#{loginPwd};
     </select>
+
+    <select id="checkingPwd" resultType="java.lang.Integer">
+        select count(*) from tbl_user where id=#{userId} and loginPwd=#{oldPwd}
+    </select>
+
+    <update id="updatePwd">
+        update tbl_user set loginPwd=#{newPwd} where id=#{userId}
+    </update>
 	
 </mapper>
 

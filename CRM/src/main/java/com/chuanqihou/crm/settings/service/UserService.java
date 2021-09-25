@@ -4,6 +4,7 @@ import com.chuanqihou.crm.exception.LoginException;
 import com.chuanqihou.crm.settings.domain.User;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 用户接口
@@ -17,4 +18,6 @@ public interface UserService {
 
 //    用户信息查询
     List<User> getUserList();
+
+    Map<String,Boolean> updatePwd(String userId, String oldPwd, String newPwd);
 }

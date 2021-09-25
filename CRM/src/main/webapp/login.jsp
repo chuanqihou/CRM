@@ -79,11 +79,13 @@ To change this template use File | Settings | File Templates.
 			$.ajax({
 				url : "setting/user/login.do",
 				data : {
+					//参数：用户名、密码
 					"loginAct" : $("#loginAct").val(),
 					"loginPwd" : $("#loginpwd").val()
 				},
 				type : "post",
 				dataType : "json",
+				//返回状态信息
 				success : function (data){
 					if (data.success){
 						//登录成功转至首页

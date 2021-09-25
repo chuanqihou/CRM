@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.chuanqihou.crm.workbench.dao.ClueActivityRelationDao">
+    <!--	取消线索与某一条市场活动信息的关联，删除一条线索与市场活动关系数据-->
+	<delete id="unbund">
+        delete from tbl_clue_activity_relation where id=#{id}
+    </delete>
+
+    <!--    根据线索Id和市场活动Id将市场活动与线索进行关联，插入一条线索与市场活动关系数据-->
+    <insert id="bund">
+        insert into tbl_clue_activity_relation(id,clueId,activityId)values (#{id},#{clueId},#{activityId})
+    </insert>
+
+<!--    根据线索Id查询线索与市场活动关系信息-->
+    <select id="getListByClueId" resultType="com.chuanqihou.crm.workbench.domain.ClueActivityRelation">
+        select *from tbl_clue_activity_relation where clueId=#{clueId}
+    </select>
+
+<!--    删除线索与市场活动关系数据-->
+    <delete id="delete">
+        delete from tbl_clue_activity_relation where id=#{id}
+    </delete>
+  	
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

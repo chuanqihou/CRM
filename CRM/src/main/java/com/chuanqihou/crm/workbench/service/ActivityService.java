@@ -30,13 +30,26 @@ public interface ActivityService {
     //根据条件更新市场活动信息
     boolean update(Activity activity);
 
+    //展示市场活动的详细信息（仅市场活动信息）
     Activity detail(String id);
 
+    //获取市场活动备注信息
     List<ActivityRemark> getRemarkListById(String id);
 
+    //删除市场活动备注信息
     boolean deleteRemark(String id);
 
+    //添加市场活动备注信息
     boolean saveRemark(ActivityRemark ar);
 
+    //更新市场活动备注信息
     boolean updateRemark(ActivityRemark activityRemark);
+
+    //根据线索Id查询该线索中关联的市场活动
+    List<Activity> getActivityByClueID(String id);
+
+    //获取市场活动信息（除线索已关联的）
+    List<Activity> getActivityByNameByClueID(Map<String, String> map);
+    //根据市场活动名称模糊查询市场活动信息
+    List<Activity> getActivityListByName(String aname);
 }

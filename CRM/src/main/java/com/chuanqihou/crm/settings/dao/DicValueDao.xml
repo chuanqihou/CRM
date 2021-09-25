@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.chuanqihou.crm.settings.dao.DicValueDao">
+
+<!--    数据字典类型作为查询条件，取得单个数据字典类型中的数据并排序-->
+    <select id="getListByCode" resultType="com.chuanqihou.crm.settings.domain.DicValue">
+        select *from tbl_dic_value where typeCode=#{code} order by orderNo
+    </select>
+
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -5,7 +5,9 @@ import com.chuanqihou.crm.settings.dao.UserDao;
 import com.chuanqihou.crm.settings.domain.User;
 import com.chuanqihou.crm.settings.service.UserService;
 import com.chuanqihou.crm.utils.DateTimeUtil;
+import com.chuanqihou.crm.utils.MD5Util;
 import com.chuanqihou.crm.utils.SqlSessionUtil;
+import org.apache.log4j.NDC;
 
 import java.util.HashMap;
 import java.util.List;
@@ -69,5 +71,28 @@ public class UserServiceIml implements UserService {
 //        查询（调用数据库）
         List<User> userList = userDao.getUserList();
         return userList;
+    }
+
+    @Override
+    public Map<String,Boolean> updatePwd(String userId, String oldPwd, String newPwd) {
+        String oldPwdMD = MD5Util.getMD5(oldPwd);
+        String newPwdMD = MD5Util.getMD5(newPwd);
+        Map<String,String> map = new HashMap<>();
+        map.put("userId",userId);
+        map.put("oldPwd",oldPwdMD);
+        map.put("newPwd",newPwdMD);
+        boolean updatePwd = false;
+        boolean checkingPwd = false;
+        if (userDao.checkingPwd(map)==1){
+            checkingPwd = true;
+            if (userDao.updatePwd(map) == 1) {
+                updatePwd = true;
+            }
+        }
+
+        Map<String,Boolean> resultmap = new HashMap<>();
+        resultmap.put("checkingPwd",checkingPwd);
+        resultmap.put("updatePwd",updatePwd);
+        return resultmap;
     }
 }

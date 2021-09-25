@@ -36,13 +36,14 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 		//点击市场活动后页面加载市场活动列表
 		pageList(1,5);
 
-		//点击调用模态窗口
+		//点击调用创建模态窗口
 		$("#addBtn").click(function (){
 			//加载用户信息下拉框
 			$.ajax({
 				url : "workbench/activity/getUserList.do",
 				type : "get",
 				dataType : "json",
+                //返回所有用户信息
 				success : function (data){
 					//拼接字符串
 					var html = "<option>---请选择---</option>"
@@ -67,6 +68,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 			$.ajax({
 				url : "workbench/activity/save.do",
 				data : {
+				    //请求参数：所有者、市场活动名称、开始日期、结束日期、成本、描述
 					"owner" : $.trim($("#create-marketActivityOwner").val()),
 					"name" : $.trim($("#create-marketActivityName").val()),
 					"startDate" : $.trim($("#create-startTime").val()),
@@ -76,9 +78,12 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 				},
 				type: "post",
 				dataType: "json",
+                //获取添加状态信息
 				success : function (data){
 					if (data.success){
+					    //添加成功后清空添加表单
 						$("#activitySaveForm")[0].reset();
+						//隐藏创建模态窗口
 						$("#createActivityModal").modal("hide");
 						//刷新列表，跳转到第一页，维持用户选择每页展示数据条数
 						pageList(1,$("#activityPage").bs_pagination('getOption', 'rowsPerPage'));
@@ -96,7 +101,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 			$("#hidden-owner").val($.trim($("#search-owner").val()));
 			$("#hidden-startDate").val($.trim($("#search-startDate").val()));
 			$("#hidden-endDate").val($.trim($("#search-endDate").val()));
-			//页面加载市场活动列表
+			//查询后页面加载市场活动列表
 			pageList(1,5);
 		});
 
@@ -133,9 +138,11 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 					//发送删除的ajax请求
 					$.ajax({
 						url : "workbench/activity/delete.do",
+                        //参数：需要删除的市场活动Id
 						data : param,
 						type : "post",
 						dataType : "json",
+                        //返回删除状态信息
 						success : function (data){
 							if (data.success){
 								//删除成功，取消全选框
@@ -166,10 +173,12 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 				$.ajax({
 					url : "workbench/activity/getUserListAndActivity.do",
 					data : {
+					    //参数：需要更新的市场活动Id
 						id
 					},
 					type : "get",
 					dataType : "json",
+                    //返回根据Id查询出的市场活动信息以及所有用户信息
 					success : function (data){
 						//拼接字符串
 						var html = "";
@@ -196,12 +205,13 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 			}
 		});
 
-		//点击更新按钮执行操作
+		//点击更新市场活动按钮执行操作
 		$("#updateBtn").click(function(){
 			//ajax局部刷新更新操作 参数：需要更新的所有信息
 			$.ajax({
 				url : "workbench/activity/update.do",
 				data : {
+				    //参数：市场活动Id、所有者、市场活动名称、开始日期、结束日期、成本、描述
 					"id" : $.trim($("#edit-id").val()),
 					"owner" : $.trim($("#edit-marketActivityOwner").val()),
 					"name" : $.trim($("#edit-marketActivityName").val()),
@@ -212,6 +222,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 				},
 				type: "post",
 				dataType: "json",
+                //返回更新状态信息
 				success : function (data){
 					if (data.success){
 						//更新成功，隐藏页面模板
@@ -237,7 +248,6 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 		$("#search-owner").val($.trim($("#hidden-owner").val()));
 		$("#search-startDate").val($.trim($("#hidden-startDate").val()));
 		$("#search-endDate").val($.trim($("#hidden-endDate").val()));
-
 		//调用ajax方法获取所有市场活动信息列表
 		$.ajax({
 			url : "workbench/activity/pageList.do",
@@ -251,7 +261,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 			},
 			type : "get",
 			dataType : "json",
-			//成功后执行
+			//返回根据条件查询出的所有市场活动信息，以及市场活动总数
 			success : function (data){
 				//定义一个字符串
 				var html = "";
@@ -260,6 +270,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 					//将数据拼接
 					html+='<tr class="active">';
 					html+='<td><input type="checkbox" name="xz" value="'+n.id+'" /></td>';
+					//在市场活动列表页面点击市场活动名称跳转（请求转发）到市场活动详细页，携带当前市场活动Id作为参数
 					html+='<td><a style="text-decoration: none; cursor: pointer;" onclick="window.location.href=\'workbench/activity/detail.do?id='+n.id+'\';">'+n.name+'</a></td>';
 					html+='<td>'+n.owner+'</td>';
 					html+='<td>'+n.startDate+'</td>';

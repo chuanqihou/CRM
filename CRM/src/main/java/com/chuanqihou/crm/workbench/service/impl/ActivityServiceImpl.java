@@ -197,4 +197,41 @@ public class ActivityServiceImpl implements ActivityService {
         //返回结果
         return flag;
     }
+
+    /**
+     * 根据线索Id查询该线索中关联的市场活动
+     * @param id    线索Id
+     * @return  市场活动集合
+     */
+    @Override
+    public List<Activity> getActivityByClueID(String id) {
+        //调用Dao层连接数据库
+        List<Activity> activities = activityDao.getActivityByClueID(id);
+        return activities;
+    }
+
+    /**
+     * 获取市场活动信息（除线索已关联的）
+     * @param map   参数
+     * @return  市场活动信息
+     */
+    @Override
+    public List<Activity> getActivityByNameByClueID(Map<String, String> map) {
+        //调用DAO层连接数据库
+        List<Activity> activities = activityDao.getActivityByNameByClueID(map);
+        return activities;
+    }
+
+    /**
+     * 根据市场活动名称模糊查询市场活动信息
+     * @param aname 市场活动名
+     * @return  市场活动信息
+     */
+    @Override
+    public List<Activity> getActivityListByName(String aname) {
+        //调用dao层
+        List<Activity> activities = activityDao.getActivityListByName(aname);
+        //返回List<Activity>
+        return activities;
+    }
 }

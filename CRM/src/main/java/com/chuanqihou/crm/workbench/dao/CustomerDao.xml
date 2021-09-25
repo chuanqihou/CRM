@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.chuanqihou.crm.workbench.dao.CustomerDao">
+    <!--	通过公司名称获取客户信息-->
+  	<select id="getCustomerByName" resultType="com.chuanqihou.crm.workbench.domain.Customer">
+        select *from tbl_customer where name=#{name}
+    </select>
+
+    <!--  插入客户信息  -->
+    <insert id="save">
+        insert into tbl_customer(
+                id,
+                owner,
+                name,
+                website,
+                phone,
+                createBy,
+                createTime,
+                contactSummary,
+                nextContactTime,
+                description,
+                address
+            )
+        values (
+                #{id},
+                #{owner},
+                #{name},
+                #{website},
+                #{phone},
+                #{createBy},
+                #{createTime},
+                #{contactSummary},
+                #{nextContactTime},
+                #{description},
+                #{address}
+               )
+    </insert>
+
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
