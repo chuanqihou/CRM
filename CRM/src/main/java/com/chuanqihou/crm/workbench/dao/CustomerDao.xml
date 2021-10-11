@@ -39,6 +39,107 @@
                )
     </insert>
 
+    <!--    根据条件查询客户信息列表总数动态SQL-->
+    <select id="getTotalByCondition" resultType="int">
+        select count(*) from tbl_customer a join tbl_user u on a.owner=u.id
+        <where>
+
+            <if test="name!=null and name!=''">
+                a.name like '%' #{name} '%'
+            </if>
+
+            <if test="owner!=null and owner!=''">
+                and u.name like '%' #{owner} '%'
+            </if>
+
+            <if test="phone!=null and phone!=''">
+                and a.phone=#{phone}
+            </if>
+
+            <if test="website!=null and website!=''">
+                and a.website like '%' #{website} '%'
+            </if>
+        </where>
+    </select>
+
+    <!--    根据条件查询客户信息列表总数动态SQL-->
+    <select id="getActivityByCondition" resultType="com.chuanqihou.crm.workbench.domain.Customer">
+        select a.id,a.name,u.name as owner,a.phone,a.website from tbl_customer a join tbl_user u on a.owner=u.id
+        <where>
+            <if test="name!=null and name!=''">
+                a.name like '%' #{name} '%'
+            </if>
+
+            <if test="owner!=null and owner!=''">
+                and u.name like '%' #{owner} '%'
+            </if>
+
+            <if test="phone!=null and phone!=''">
+                and a.phone like '%' #{phone} '%'
+            </if>
+
+            <if test="website!=null and website!=''">
+                and a.website like '%' #{website} '%'
+            </if>
+        </where>
+
+        order by a.createTime desc
+
+        limit #{skipCount},#{pageSize}
+
+    </select>
+    <!--查询客户信息-->
+    <select id="getCustomerById" resultType="com.chuanqihou.crm.workbench.domain.Customer">
+        select * from tbl_customer where id=#{id}
+    </select>
+
+    <!--  删除客户信息  -->
+    <delete id="delete">
+        delete from tbl_customer where id=#{id}
+    </delete>
+
+    <!--  更新客户信息  -->
+    <update id="update">
+        update tbl_customer set
+            owner=#{owner},
+            name=#{name},
+            website=#{website},
+            phone=#{phone},
+            editBy=#{editBy},
+            editTime=#{editTime},
+            contactSummary=#{contactSummary},
+            nextContactTime=#{nextContactTime},
+            description=#{description},
+            address=#{address}
+            where id=#{id}
+    </update>
+
+    <!--    查询客户详细信息-->
+    <select id="getCustomerByIdAndOwner" resultType="com.chuanqihou.crm.workbench.domain.Customer">
+        select
+            c.id,
+            u.name as owner,
+            c.name,
+            c.website,
+            c.phone,
+            c.createBy,
+            c.createTime,
+            c.editBy,
+            c.editTime,
+            c.contactSummary,
+            c.nextContactTime,
+            c.description,
+            c.address
+        from tbl_customer c join tbl_user u on c.owner=u.id where c.id=#{id}
+    </select>
+
+    <select id="getCustomerName" resultType="com.chuanqihou.crm.workbench.domain.Customer">
+        select * from tbl_customer where name like '%' #{name} '%'
+    </select>
+
+    <select id="getIdByName" resultType="java.lang.String">
+        select id from tbl_customer where name= #{customerId}
+    </select>
 </mapper>
 
 

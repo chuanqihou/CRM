@@ -156,7 +156,7 @@ public class ClueServlet extends HttpServlet {
             //获取表单参数
             String money = request.getParameter("money");
             String name = request.getParameter("name");
-            String expectDate = request.getParameter("expectDate");
+            String expectDate = request.getParameter("expectedDate");
             String stage = request.getParameter("stage");
             String activityId = request.getParameter("activityId");
             //生成交易Id

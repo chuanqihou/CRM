@@ -23,6 +23,54 @@
                    #{customerId}
                )
     </insert>
+
+    <!--  根据客户Id查询备注信息  -->
+    <select id="getRemarkListById" resultType="com.chuanqihou.crm.workbench.domain.CustomerRemark">
+        select * from tbl_customer_remark where customerId=#{customerId}
+    </select>
+
+    <!--    根据市场活动Id插入备注信息-->
+    <insert id="saveRemark">
+        insert into tbl_customer_remark (
+            id,
+            noteContent,
+            createTime,
+            createBy,
+            editFlag,
+            customerId
+        )values(
+           #{id},
+           #{noteContent},
+           #{createTime},
+           #{createBy},
+           #{editFlag},
+           #{customerId}
+               )
+    </insert>
+
+    <!--    根据客户Id查询旗下备注数量-->
+    <select id="getTotalById" resultType="int">
+        select count(*) from tbl_customer_remark where customerId=#{customerId}
+    </select>
+    <!--根据客户Id删除旗下备注信息-->
+    <delete id="delete">
+        delete from tbl_customer_remark where customerId=#{customerId}
+    </delete>
+
+    <!--    根据备注Id更新备注信息-->
+    <update id="updateRemark">
+        update tbl_customer_remark set
+           noteContent=#{noteContent},
+           editBy=#{editBy},
+           editTime=#{editTime},
+           editFlag=#{editFlag}
+        where id=#{id}
+    </update>
+
+    <!--    根据备注Id删除备注信息-->
+    <delete id="deleteRemarkById">
+        delete from tbl_customer_remark where id=#{id}
+    </delete>
 </mapper>
 
 

@@ -1,4 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%String path = request.getContextPath();
 String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+path+"/";%>
 <!DOCTYPE html>
@@ -15,23 +16,369 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 <script type="text/javascript" src="jquery/bootstrap-datetimepicker-master/js/bootstrap-datetimepicker.min.js"></script>
 <script type="text/javascript" src="jquery/bootstrap-datetimepicker-master/locale/bootstrap-datetimepicker.zh-CN.js"></script>
 
+<link rel="stylesheet" type="text/css" href="jquery/bs_pagination/jquery.bs_pagination.min.css">
+<script type="text/javascript" src="jquery/bs_pagination/jquery.bs_pagination.min.js"></script>
+<script type="text/javascript" src="jquery/bs_pagination/en.js"></script>
+
+<script type="text/javascript" src="jquery/bs_typeahead0/bootstrap3-typeahead.min.js"></script>
+
 <script type="text/javascript">
 
 	$(function(){
-		
+/*		$(".time").datetimepicker({
+			minView: "month",
+			language:  'zh-CN',
+			format: 'yyyy-mm-dd',
+			autoclose: true,
+			todayBtn: true,
+			pickerPosition: "bottom-left"
+		});*/
+
 		//定制字段
 		$("#definedColumns > li").click(function(e) {
 			//防止下拉菜单消失
 	        e.stopPropagation();
 	    });
-		
+
+		//点击页面加载客户列表
+		pageList(1,5);
+
+		//点击查询按钮
+		$("#searchBtn").click(function (){
+			//将查询条件隐藏在隐藏域中
+			$("#hidden-fullname").val($.trim($("#search-name").val()));
+			$("#hidden-owner").val($.trim($("#search-owner").val()));
+			$("#hidden-birth").val($.trim($("#search-birth").val()));
+			$("#hidden-source").val($.trim($("#search-source").val()));
+			$("#hidden-customerName").val($.trim($("#search-customerName").val()));
+			//根据条件刷新客户列表页面
+			pageList(1,5);
+		})
+
+		//获得全选框Jquery对象
+		$("#qx").click(function (){
+			//所有选择框子对象选中条件：全选框选中
+			$("input[name=xz]").prop("checked",this.checked)
+		});
+
+		//获得选择框子对象
+		$("#customerTbody").on("click",$("input[name=xz]"),function () {
+			//全选框选中条件：所有选择框子对象选中个数等于选择框子对象的总数
+			$("#qx").prop("checked",$("input[name=xz]").length==$("input[name=xz]:checked").length)
+		});
+
+		//点击调用创建模态窗口
+		$("#addBtn").click(function (){
+			//加载用户信息下拉框
+			$.ajax({
+				url : "workbench/activity/getUserList.do",
+				type : "get",
+				dataType : "json",
+				//返回所有用户信息
+				success : function (data){
+					//拼接字符串
+					var html = "<option></option>"
+					$.each(data,function (i,n){
+						html+="<option value='"+n.id+"'>"+n.name+"</option>"
+					})
+					//将用户姓名添加至下拉框值
+					$("#create-marketContactsOwner").html(html);
+					//从Session作用域中取出用户Id（使用EL表达式）
+					var id = "${user.id}";
+					//将用户Id添加至下拉框的value值
+					$("#create-marketContactsOwner").val(id);
+					//打开模态窗口
+					$("#createContactsModal").modal("show");
+				}
+			})
+		})
+
+		//点击添加市场活动信息
+		$("#saveBtn").click(function(){
+			//ajax局部刷新添加操作
+			$.ajax({
+				url : "workbench/contacts/save.do",
+				data : {
+					"owner" : $.trim($("#create-marketContactsOwner").val()),
+					"source" : $.trim($("#create-clueSource").val()),
+					"customerId" : $.trim($("#create-customerName").val()),
+					"fullname" : $.trim($("#create-surname").val()),
+					"appellation" : $.trim($("#create-call").val()),
+					"email" : $.trim($("#create-email").val()),
+					"mphone" : $.trim($("#create-mphone").val()),
+					"job" : $.trim($("#create-job").val()),
+					"birth" : $.trim($("#create-birth").val()),
+					"description" : $.trim($("#create-describe").val()),
+					"contactSummary" : $.trim($("#create-contactSummary1").val()),
+					"nextContactTime" : $.trim($("#create-nextContactTime1").val()),
+					"address" : $.trim($("#edit-address1").val())
+				},
+				type: "post",
+				dataType: "json",
+				//获取添加状态信息
+				success : function (data){
+					if (data.success){
+						//添加成功后清空添加表单
+						$("#contactsSaveForm")[0].reset();
+						//隐藏创建模态窗口
+						$("#createContactsModal").modal("hide");
+						//刷新列表，跳转到第一页，维持用户选择每页展示数据条数
+						pageList(1,$("#activityPage").bs_pagination('getOption', 'rowsPerPage'));
+					}else {
+						alert("添加市场活动失败！")
+					}
+				}
+			})
+		});
+
+		$("#create-customerName").typeahead({
+			source: function (query, process) {
+				$.get(
+						"workbench/contacts/getContactsName.do",
+						{ "name" : query },
+						function (data) {
+							//alert(data);
+							process(data);
+						},
+						"json"
+				);
+			},
+			delay: 1500
+		});
+
+		$("#updateContacts").click(function(){
+			//获取选中需要修改市场活动信息数量
+			var $xz = $("input[name=xz]:checked");
+			if ($xz.length==0){
+				alert("请选择需要修改的联系人信息！")
+			}else if ($xz.length>=2){
+				alert("只能选择一条记录进行修改！")
+			}else {
+				//获取选择需要更新的客户信息Id
+				var id = $xz.val();
+				$("#edit-id").val(id);
+				$.ajax({
+					url : "workbench/contacts/getUserListAndContacts.do",
+					data : {
+						//参数：需要更新的客户信息Id
+						"id" : id
+					},
+					type : "get",
+					dataType : "json",
+					//返回根据Id查询出的客户信息以及所有用户信息
+					success : function (data){
+						//拼接字符串
+						var html = "";
+						$.each(data.uList,function (i,n){
+							//如果用户信息表中的用户Id等于选中的市场活动信息表中所有者Id则选中
+							if(data.c.owner==n.id){
+								html+="<option selected value='"+n.id+"'>"+n.name+"</option>";
+							}else {
+								html+="<option value='"+n.id+"'>"+n.name+"</option>";
+							}
+						})
+						//将该客户中的信息加载到页面中
+						$("#edit-contactsOwner").html(html);
+
+						$("#edit-clueSource1").val(data.c.source);
+						$("#edit-surname").val(data.c.fullname);
+						$("#edit-call").val(data.c.appellation);
+						$("#edit-job").val(data.c.job);
+						$("#edit-mphone").val(data.c.mphone);
+						$("#edit-email").val(data.c.email);
+						$("#edit-birth").val(data.c.birth);
+						$("#edit-describe").val(data.c.description);
+						$("#create-contactSummary").val(data.c.contactSummary);
+						$("#create-nextContactTime").val(data.c.nextContactTime);
+						$("#edit-address2").val(data.c.address);
+						$("#edit-customerName").val(data.c.customerId);
+						//展示修改页面
+						$("#editContactsModal").modal("show");
+					}
+				})
+			}
+		})
+
+		$("#edit-customerName").typeahead({
+			source: function (query, process) {
+				$.get(
+						"workbench/contacts/getContactsName.do",
+						{ "name" : query },
+						function (data) {
+							//alert(data);
+							process(data);
+						},
+						"json"
+				);
+			},
+			delay: 1500
+		});
+
+		$("#updateBtn").click(function(){
+			var id = $("#edit-id").val();
+			//ajax局部刷新添加操作
+			$.ajax({
+				url : "workbench/contacts/update.do",
+				data : {
+					"id" : id,
+					"owner" : $.trim($("#edit-contactsOwner").val()),
+					"source" : $.trim($("#edit-clueSource1").val()),
+					"customerName" : $.trim($("#edit-customerName").val()),
+					"fullname" : $.trim($("#edit-surname").val()),
+					"appellation" : $.trim($("#edit-call").val()),
+					"email" : $.trim($("#edit-email").val()),
+					"mphone" : $.trim($("#edit-mphone").val()),
+					"job" : $.trim($("#edit-job").val()),
+					"birth" : $.trim($("#edit-birth").val()),
+					"description" : $.trim($("#edit-describe").val()),
+					"contactSummary" : $.trim($("#create-contactSummary").val()),
+					"nextContactTime" : $.trim($("#create-nextContactTime").val()),
+					"address" : $.trim($("#edit-address2").val())
+				},
+				type: "post",
+				dataType: "json",
+				//获取添加状态信息
+				success : function (data){
+					if (data.success){
+						//添加成功后清空添加表单
+						$("#contactsSaveForm")[0].reset();
+						//隐藏创建模态窗口
+						$("#editContactsModal").modal("hide");
+						//刷新列表，跳转到第一页，维持用户选择每页展示数据条数
+						pageList(1,$("#activityPage").bs_pagination('getOption', 'rowsPerPage'));
+					}else {
+						alert("修改联系人信息失败！")
+					}
+				}
+			})
+		})
+
+		$("#deleteBtn").click(function(){
+			//获取选中需要修改市场活动信息数量
+			var $xz = $("input[name=xz]:checked");
+			if ($xz.length==0){
+				alert("请选择需要删除的联系人！")
+			}else {
+				if (confirm("确定删除数据吗？")){
+					//拼接参数（需要删除客户信息的Id）
+					var param = "";
+					for (var i = 0;i<$xz.length;i++){
+						param+="id="+$($xz[i]).val();
+						//给拼接参数中添加分隔符“,”
+						if (i<$xz.length-1){
+							param+="&";
+						}
+					}
+					//发送删除的ajax请求
+					$.ajax({
+						url : "workbench/contacts/delete.do",
+						//参数：需要删除的客户信息Id
+						data : param,
+						type : "post",
+						dataType : "json",
+						//返回删除状态信息
+						success : function (data){
+							if (data.success){
+								//删除成功，取消全选框
+								$("#qx").prop("checked",false);
+								//刷新列表，跳转到第一页，维持用户选择每页展示数据条数
+								pageList(1,$("#contactsPage").bs_pagination('getOption', 'rowsPerPage'));
+							}else {
+								//删除失败提示
+								alert("删除客户信息失败！")
+							}
+						}
+					})
+				}
+			}
+		})
+
 	});
+
+	//根据条件获取客户信息列表并分页
+	function pageList(pageNo,pageSize) {
+		//将隐藏域中的查询条件重新展示
+		$("#search-fullname").val($.trim($("#hidden-fullname").val()));
+		$("#search-owner").val($.trim($("#hidden-owner").val()));
+		$("#search-customerName").val($.trim($("#hidden-customerName").val()));
+		$("#search-birth").val($.trim($("#hidden-birth").val()));
+		//调用ajax方法根据条件获取所有客户信息列表
+		$.ajax({
+			url: "workbench/contacts/pageList.do",
+			data: {
+				"pageNo": pageNo,		//页码
+				"pageSize": pageSize,		//每页展示数据条数
+				"fullname": $.trim($("#search-fullname").val()),		//查询条件：客户名称
+				"owner": $.trim($("#search-owner").val()),		//查询条件：所有者
+				"customerName": $.trim($("#search-customerName").val()),		//查询条件：客户座机
+				"birth": $.trim($("#search-birth").val()),
+				"source": $.trim($("#search-source").val()),		//查询条件：客户网站
+			},
+			type: "get",
+			dataType: "json",
+			//返回根据条件查询出的所有客户信息，以及客户总数
+			success: function (data) {
+				//定义一个字符串
+				var html = "";
+				//使用$.each循环取出客户数据
+				$.each(data.dataList, function (i, n) {
+					html+='<tr>';
+					html+='<td><input type="checkbox" name="xz" value="' + n.id + '"/></td>';
+					html+='<td><a style="text-decoration: none; cursor: pointer;" onclick="window.location.href=\'workbench/contacts/detail.do?id=' + n.id + '\';">' + n.fullname + '</a></td>';
+					html+='<td>'+n.customerId+'</td>';
+					html+='<td>'+n.owner+'</td>';
+					html+='<td>'+n.source+'</td>';
+					html+='<td>'+n.birth+'</td>';
+					html+='</tr>';
+				})
+				//将数据展示到前端
+				$("#contactsTbody").html(html);
+				//没有查询出数据提示语
+				if ($("#contactsTbody").html() == "" || $("#contactsTbody").html() == null) {
+					html += '<tr class="active" align="center">';
+					html += '<td colspan="7">没有数据哦！</td>';
+					html += '</tr>';
+				}
+				// 将提示语输出
+				$("#contactsTbody").html(html);
+				//获取总页数（根据查询条件而改变）
+				var totalPages = data.total % pageSize == 0 ? data.total / pageSize : parseInt(data.total / pageSize) + 1;
+				//调用分页样式方法
+				$("#contactsPage").bs_pagination({
+					currentPage: pageNo, // 页码
+					rowsPerPage: pageSize, // 每页显示的记录条数
+					maxRowsPerPage: 20, // 每页最多显示的记录条数
+					totalPages: totalPages, // 总页数
+					totalRows: data.total, // 总记录条数
+					visiblePageLinks: 3, // 显示几个卡片
+
+					showGoToPage: true,
+					showRowsPerPage: true,
+					showRowsInfo: true,
+					showRowsDefaultInfo: true,
+					//单击分页按钮后执行回调函数
+					onChangePage: function (event, data) {
+						//将全选框取消选中
+						// $("#qx")[0].checked=false;
+						$("#qx").prop("checked", false);
+						//根据条件刷新市场活动列表
+						pageList(data.currentPage, data.rowsPerPage);
+					}
+				});
+			}
+		})
+
+	}
 	
 </script>
 </head>
 <body>
-
-	
+	<%--隐藏域(用来保存临时查询条件数据)--%>
+	<input type="hidden" id="hidden-fullname"/>
+	<input type="hidden" id="hidden-owner"/>
+	<input type="hidden" id="hidden-customerName"/>
+	<input type="hidden" id="hidden-birth"/>
+	<input type="hidden" id="hidden-source"/>
 	<!-- 创建联系人的模态窗口 -->
 	<div class="modal fade" id="createContactsModal" role="dialog">
 		<div class="modal-dialog" role="document" style="width: 85%;">
@@ -43,35 +390,22 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 					<h4 class="modal-title" id="myModalLabelx">创建联系人</h4>
 				</div>
 				<div class="modal-body">
-					<form class="form-horizontal" role="form">
+					<form class="form-horizontal" role="form" id="contactsSaveForm">
 					
 						<div class="form-group">
-							<label for="create-contactsOwner" class="col-sm-2 control-label">所有者<span style="font-size: 15px; color: red;">*</span></label>
+							<label for="create-marketContactsOwner" class="col-sm-2 control-label">所有者<span style="font-size: 15px; color: red;">*</span></label>
 							<div class="col-sm-10" style="width: 300px;">
-								<select class="form-control" id="create-contactsOwner">
-								  <option>zhangsan</option>
-								  <option>lisi</option>
-								  <option>wangwu</option>
+								<select class="form-control" id="create-marketContactsOwner">
+
 								</select>
 							</div>
 							<label for="create-clueSource" class="col-sm-2 control-label">来源</label>
 							<div class="col-sm-10" style="width: 300px;">
 								<select class="form-control" id="create-clueSource">
 								  <option></option>
-								  <option>广告</option>
-								  <option>推销电话</option>
-								  <option>员工介绍</option>
-								  <option>外部介绍</option>
-								  <option>在线商场</option>
-								  <option>合作伙伴</option>
-								  <option>公开媒介</option>
-								  <option>销售邮件</option>
-								  <option>合作伙伴研讨会</option>
-								  <option>内部研讨会</option>
-								  <option>交易会</option>
-								  <option>web下载</option>
-								  <option>web调研</option>
-								  <option>聊天</option>
+									<c:forEach items="${source}" var="a">
+										<option value="${a.value}">${a.text}</option>
+									</c:forEach>
 								</select>
 							</div>
 						</div>
@@ -85,11 +419,9 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 							<div class="col-sm-10" style="width: 300px;">
 								<select class="form-control" id="create-call">
 								  <option></option>
-								  <option>先生</option>
-								  <option>夫人</option>
-								  <option>女士</option>
-								  <option>博士</option>
-								  <option>教授</option>
+									<c:forEach items="${appellation}" var="a">
+										<option value="${a.value}">${a.text}</option>
+									</c:forEach>
 								</select>
 							</div>
 							
@@ -143,7 +475,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 							<div class="form-group">
 								<label for="create-nextContactTime1" class="col-sm-2 control-label">下次联系时间</label>
 								<div class="col-sm-10" style="width: 300px;">
-									<input type="text" class="form-control" id="create-nextContactTime1">
+									<input type="text" class="form-control time" id="create-nextContactTime1">
 								</div>
 							</div>
 						</div>
@@ -154,7 +486,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
                             <div class="form-group">
                                 <label for="edit-address1" class="col-sm-2 control-label">详细地址</label>
                                 <div class="col-sm-10" style="width: 81%;">
-                                    <textarea class="form-control" rows="1" id="edit-address1">北京大兴区大族企业湾</textarea>
+                                    <textarea class="form-control" rows="1" id="edit-address1"></textarea>
                                 </div>
                             </div>
                         </div>
@@ -163,7 +495,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-					<button type="button" class="btn btn-primary" data-dismiss="modal">保存</button>
+					<button type="button" class="btn btn-primary" id="saveBtn">保存</button>
 				</div>
 			</div>
 		</div>
@@ -181,34 +513,21 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 				</div>
 				<div class="modal-body">
 					<form class="form-horizontal" role="form">
-					
+						<input type="hidden" id="edit-id">
 						<div class="form-group">
 							<label for="edit-contactsOwner" class="col-sm-2 control-label">所有者<span style="font-size: 15px; color: red;">*</span></label>
 							<div class="col-sm-10" style="width: 300px;">
 								<select class="form-control" id="edit-contactsOwner">
-								  <option selected>zhangsan</option>
-								  <option>lisi</option>
-								  <option>wangwu</option>
+
 								</select>
 							</div>
 							<label for="edit-clueSource1" class="col-sm-2 control-label">来源</label>
 							<div class="col-sm-10" style="width: 300px;">
 								<select class="form-control" id="edit-clueSource1">
 								  <option></option>
-								  <option selected>广告</option>
-								  <option>推销电话</option>
-								  <option>员工介绍</option>
-								  <option>外部介绍</option>
-								  <option>在线商场</option>
-								  <option>合作伙伴</option>
-								  <option>公开媒介</option>
-								  <option>销售邮件</option>
-								  <option>合作伙伴研讨会</option>
-								  <option>内部研讨会</option>
-								  <option>交易会</option>
-								  <option>web下载</option>
-								  <option>web调研</option>
-								  <option>聊天</option>
+									<c:forEach items="${source}" var="a">
+										<option value="${a.value}">${a.text}</option>
+									</c:forEach>
 								</select>
 							</div>
 						</div>
@@ -222,11 +541,9 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 							<div class="col-sm-10" style="width: 300px;">
 								<select class="form-control" id="edit-call">
 								  <option></option>
-								  <option selected>先生</option>
-								  <option>夫人</option>
-								  <option>女士</option>
-								  <option>博士</option>
-								  <option>教授</option>
+									<c:forEach items="${appellation}" var="a">
+										<option value="${a.value}">${a.text}</option>
+									</c:forEach>
 								</select>
 							</div>
 						</div>
@@ -263,7 +580,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 						<div class="form-group">
 							<label for="edit-describe" class="col-sm-2 control-label">描述</label>
 							<div class="col-sm-10" style="width: 81%;">
-								<textarea class="form-control" rows="3" id="edit-describe">这是一条线索的描述信息</textarea>
+								<textarea class="form-control" rows="3" id="edit-describe">&nbsp;</textarea>
 							</div>
 						</div>
 						
@@ -290,7 +607,10 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
                             <div class="form-group">
                                 <label for="edit-address2" class="col-sm-2 control-label">详细地址</label>
                                 <div class="col-sm-10" style="width: 81%;">
-                                    <textarea class="form-control" rows="1" id="edit-address2">北京大兴区大族企业湾</textarea>
+                                    <textarea class="form-control" rows="1" id="edit-address2">
+
+
+									</textarea>
                                 </div>
                             </div>
                         </div>
@@ -299,7 +619,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-					<button type="button" class="btn btn-primary" data-dismiss="modal">更新</button>
+					<button type="button" class="btn btn-primary" id="updateBtn">更新</button>
 				</div>
 			</div>
 		</div>
@@ -327,21 +647,21 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 				  <div class="form-group">
 				    <div class="input-group">
 				      <div class="input-group-addon">所有者</div>
-				      <input class="form-control" type="text">
+				      <input class="form-control" type="text" id="search-owner">
 				    </div>
 				  </div>
 				  
 				  <div class="form-group">
 				    <div class="input-group">
 				      <div class="input-group-addon">姓名</div>
-				      <input class="form-control" type="text">
+				      <input class="form-control" type="text" id="search-fullname">
 				    </div>
 				  </div>
 				  
 				  <div class="form-group">
 				    <div class="input-group">
 				      <div class="input-group-addon">客户名称</div>
-				      <input class="form-control" type="text">
+				      <input class="form-control" type="text" id="customerName">
 				    </div>
 				  </div>
 				  
@@ -350,22 +670,11 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 				  <div class="form-group">
 				    <div class="input-group">
 				      <div class="input-group-addon">来源</div>
-				      <select class="form-control" id="edit-clueSource">
+				      <select class="form-control" id="search-source">
 						  <option></option>
-						  <option>广告</option>
-						  <option>推销电话</option>
-						  <option>员工介绍</option>
-						  <option>外部介绍</option>
-						  <option>在线商场</option>
-						  <option>合作伙伴</option>
-						  <option>公开媒介</option>
-						  <option>销售邮件</option>
-						  <option>合作伙伴研讨会</option>
-						  <option>内部研讨会</option>
-						  <option>交易会</option>
-						  <option>web下载</option>
-						  <option>web调研</option>
-						  <option>聊天</option>
+						  <c:forEach items="${source}" var="a">
+							  <option value="${a.value}">${a.text}</option>
+						  </c:forEach>
 						</select>
 				    </div>
 				  </div>
@@ -373,19 +682,19 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 				  <div class="form-group">
 				    <div class="input-group">
 				      <div class="input-group-addon">生日</div>
-				      <input class="form-control" type="text">
+				      <input class="form-control" type="text" id="search-birth">
 				    </div>
 				  </div>
 				  
-				  <button type="submit" class="btn btn-default">查询</button>
+				  <button type="button" class="btn btn-default" id="searchBtn">查询</button>
 				  
 				</form>
 			</div>
 			<div class="btn-toolbar" role="toolbar" style="background-color: #F7F7F7; height: 50px; position: relative;top: 10px;">
 				<div class="btn-group" style="position: relative; top: 18%;">
-				  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createContactsModal"><span class="glyphicon glyphicon-plus"></span> 创建</button>
-				  <button type="button" class="btn btn-default" data-toggle="modal" data-target="#editContactsModal"><span class="glyphicon glyphicon-pencil"></span> 修改</button>
-				  <button type="button" class="btn btn-danger"><span class="glyphicon glyphicon-minus"></span> 删除</button>
+					<button type="button" class="btn btn-primary" id="addBtn"><span class="glyphicon glyphicon-plus"></span> 创建</button>
+				  <button type="button" class="btn btn-default" id="updateContacts"><span class="glyphicon glyphicon-pencil"></span> 修改</button>
+				  <button type="button" class="btn btn-danger" id="deleteBtn"><span class="glyphicon glyphicon-minus"></span> 删除</button>
 				</div>
 				
 				
@@ -394,7 +703,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 				<table class="table table-hover">
 					<thead>
 						<tr style="color: #B3B3B3;">
-							<td><input type="checkbox" /></td>
+							<td><input type="checkbox" id="qx" /></td>
 							<td>姓名</td>
 							<td>客户名称</td>
 							<td>所有者</td>
@@ -402,60 +711,14 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 							<td>生日</td>
 						</tr>
 					</thead>
-					<tbody>
-						<tr>
-							<td><input type="checkbox" /></td>
-							<td><a style="text-decoration: none; cursor: pointer;" onclick="window.location.href='detail.jsp';">李四</a></td>
-							<td>动力节点</td>
-							<td>zhangsan</td>
-							<td>广告</td>
-							<td>2000-10-10</td>
-						</tr>
-                        <tr class="active">
-                            <td><input type="checkbox" /></td>
-                            <td><a style="text-decoration: none; cursor: pointer;" onclick="window.location.href='detail.jsp';">李四</a></td>
-                            <td>动力节点</td>
-                            <td>zhangsan</td>
-                            <td>广告</td>
-                            <td>2000-10-10</td>
-                        </tr>
+					<tbody id="contactsTbody">
+
 					</tbody>
 				</table>
 			</div>
 			
-			<div style="height: 50px; position: relative;top: 10px;">
-				<div>
-					<button type="button" class="btn btn-default" style="cursor: default;">共<b>50</b>条记录</button>
-				</div>
-				<div class="btn-group" style="position: relative;top: -34px; left: 110px;">
-					<button type="button" class="btn btn-default" style="cursor: default;">显示</button>
-					<div class="btn-group">
-						<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-							10
-							<span class="caret"></span>
-						</button>
-						<ul class="dropdown-menu" role="menu">
-							<li><a href="#">20</a></li>
-							<li><a href="#">30</a></li>
-						</ul>
-					</div>
-					<button type="button" class="btn btn-default" style="cursor: default;">条/页</button>
-				</div>
-				<div style="position: relative;top: -88px; left: 285px;">
-					<nav>
-						<ul class="pagination">
-							<li class="disabled"><a href="#">首页</a></li>
-							<li class="disabled"><a href="#">上一页</a></li>
-							<li class="active"><a href="#">1</a></li>
-							<li><a href="#">2</a></li>
-							<li><a href="#">3</a></li>
-							<li><a href="#">4</a></li>
-							<li><a href="#">5</a></li>
-							<li><a href="#">下一页</a></li>
-							<li class="disabled"><a href="#">末页</a></li>
-						</ul>
-					</nav>
-				</div>
+			<div style="height: 50px; position: relative;top: 10px;" id="contactsPage">
+
 			</div>
 			
 		</div>

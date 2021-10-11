@@ -44,6 +44,187 @@
                        )
     </insert>
 
+    <!--    根据条件查询客户信息列表总数动态SQL-->
+    <select id="getTotalByCondition" resultType="int">
+        select count(*) from tbl_tran tr join tbl_user u on tr.owner=u.id join tbl_customer cus on tr.customerId=cus.id join tbl_contacts con on tr.contactsId=con.id
+        <where>
+
+            <if test="name!=null and name!=''">
+                tr.name like '%' #{name} '%'
+            </if>
+
+            <if test="owner!=null and owner!=''">
+                and u.name like '%' #{owner} '%'
+            </if>
+
+            <if test="source!=null and source!=''">
+                and tr.source=#{source}
+            </if>
+
+            <if test="type!=null and type!=''">
+                and tr.type=#{type}
+            </if>
+
+            <if test="customerName!=null and customerName!=''">
+                and cus.name like '%' #{customerName} '%'
+            </if>
+
+            <if test="contactsName!=null and contactsName!=''">
+                and con.fullname like '%' #{contactsName} '%'
+            </if>
+
+            <if test="stage!=null and stage!=''">
+                and tr.stage like '%' #{stage} '%'
+            </if>
+
+        </where>
+    </select>
+
+    <!--    根据条件查询客户信息列表总数动态SQL-->
+    <select id="getActivityByCondition" resultType="com.chuanqihou.crm.workbench.domain.Tran">
+        select tr.id,tr.name,cus.name as customerId,u.name as owner,tr.stage,tr.type,tr.source,tr.createBy
+
+        from tbl_tran tr join tbl_user u on tr.owner=u.id
+            join tbl_customer cus on tr.customerId=cus.id
+            join tbl_contacts con on tr.contactsId=con.id
+        <where>
+            <if test="name!=null and name!=''">
+                tr.name like '%' #{name} '%'
+            </if>
+
+            <if test="owner!=null and owner!=''">
+                and u.name like '%' #{owner} '%'
+            </if>
+
+            <if test="source!=null and source!=''">
+                and tr.source=#{source}
+            </if>
+
+            <if test="type!=null and type!=''">
+                and tr.type=#{type}
+            </if>
+
+            <if test="customerName!=null and customerName!=''">
+                and cus.name like '%' #{customerName} '%'
+            </if>
+
+            <if test="contactsName!=null and contactsName!=''">
+                and con.fullname like '%' #{contactsName} '%'
+            </if>
+
+            <if test="stage!=null and stage!=''">
+                and tr.stage like '%' #{stage} '%'
+            </if>
+        </where>
+
+        order by tr.createTime desc
+
+        limit #{skipCount},#{pageSize}
+
+    </select>
+
+    <select id="detail" resultType="com.chuanqihou.crm.workbench.domain.Tran">
+
+
+        select
+            t.id,
+            u.name as owner,
+            t.money,
+            t.name,
+            t.expectedDate,
+            cus.name as customerId,
+            t.stage,
+            t.type,
+            t.source,
+            a.name as activityId,
+            con.fullname as contactsId,
+            t.createBy,
+            t.createTime,
+            t.editBy,
+            t.editTime,
+            t.description,
+            t.contactSummary,
+            t.nextContactTime
+        from tbl_tran t join tbl_user u on t.owner=u.id join tbl_customer cus on t.customerId=cus.id left join tbl_contacts con on t.contactsId=con.id join tbl_activity a on t.activityId=a.id where t.id=#{id}
+    </select>
+
+    <update id="changeStage">
+        update tbl_tran set stage=#{stage},editBy=#{editBy},editTime=#{editTime} where id=#{id}
+    </update>
+
+    <select id="getTranByCustomerId" resultType="com.chuanqihou.crm.workbench.domain.Tran">
+        select * from tbl_tran where customerId=#{customerId}
+    </select>
+
+    <delete id="deleteTransactionById">
+        delete from tbl_tran where id=#{tranId}
+    </delete>
+
+    <select id="getTotal" resultType="int">
+        select count(*) from tbl_tran
+    </select>
+
+    <select id="getCharts" resultType="java.util.Map">
+        select count(*) as value,stage as name from tbl_tran group by stage
+    </select>
+
+    <select id="getTranByContactsId" resultType="com.chuanqihou.crm.workbench.domain.Tran">
+        select * from tbl_tran where contactsId=#{contactsId}
+    </select>
+
+    <select id="getActivityByContactsId" resultType="java.lang.String">
+        select activityId from tbl_tran where contactsId=#{contactsId}
+    </select>
+
+    <select id="editShow" resultType="com.chuanqihou.crm.workbench.domain.Tran">
+        select
+
+            t.id,
+            t.owner,
+            t.money,
+            t.name,
+            t.expectedDate,
+            cus.name as customerId,
+            t.stage,
+            t.type,
+            t.source,
+            ac.name as activityId,
+            con.fullname as contactsId,
+            t.createBy,
+            t.createTime,
+            t.editBy,
+            t.editTime,
+            t.description,
+            t.contactSummary,
+            t.nextContactTime
+
+        from tbl_tran t
+        join tbl_contacts con on t.contactsId = con.id
+        join tbl_activity ac on t.activityId = ac.id
+        join tbl_customer cus on t.customerId = cus.id
+        where t.id=#{transactionId}
+    </select>
+
+    <update id="update">
+        update tbl_tran set
+            owner=#{owner},
+            money=#{money},
+            name=#{name},
+            expectedDate=#{expectedDate},
+            customerId=#{customerId},
+            stage=#{stage},
+            type=#{type},
+            source=#{source},
+            activityId=#{activityId},
+            contactsId=#{contactsId},
+            editBy=#{editBy},
+            editTime=#{editTime},
+            description=#{description},
+            contactSummary=#{contactSummary},
+            nextContactTime=#{nextContactTime}
+        where id=#{id}
+    </update>
+
 </mapper>
 
 

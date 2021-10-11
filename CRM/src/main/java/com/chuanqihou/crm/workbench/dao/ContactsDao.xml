@@ -44,7 +44,130 @@
                 #{address}
                 )
     </insert>
-  	
+
+        <!--    根据条件查询客户信息列表总数动态SQL-->
+        <select id="getTotalByCondition" resultType="int">
+                select count(*) from tbl_contacts con join tbl_user u on con.owner=u.id join tbl_customer cus on con.customerId=cus.id
+                <where>
+
+                        <if test="fullname!=null and fullname!=''">
+                                con.name like '%' #{fullname} '%'
+                        </if>
+
+                        <if test="owner!=null and owner!=''">
+                                and u.name like '%' #{owner} '%'
+                        </if>
+
+                        <if test="source!=null and source!=''">
+                                and con.source=#{source}
+                        </if>
+
+                        <if test="birth!=null and birth!=''">
+                                and con.birth &gt; #{birth}
+                        </if>
+
+                        <if test="customerName!=null and customerName!=''">
+                                and cus.name like '%' #{customerName} '%'
+                        </if>
+                </where>
+        </select>
+
+        <!--    根据条件查询客户信息列表总数动态SQL-->
+        <select id="getActivityByCondition" resultType="com.chuanqihou.crm.workbench.domain.Contacts">
+                select con.id,con.fullname,u.name as owner,con.birth,cus.name as customerId,con.source from tbl_contacts con join tbl_user u on con.owner=u.id join tbl_customer cus on con.customerId=cus.id
+                <where>
+                        <if test="fullname!=null and fullname!=''">
+                                con.name like '%' #{fullname} '%'
+                        </if>
+
+                        <if test="owner!=null and owner!=''">
+                                and u.name like '%' #{owner} '%'
+                        </if>
+
+                        <if test="source!=null and source!=''">
+                                and con.source=#{source}
+                        </if>
+
+                        <if test="birth!=null and birth!=''">
+                                and con.birth &gt; #{birth}
+                        </if>
+
+                        <if test="customerName!=null and customerName!=''">
+                                and cus.name like '%' #{customerName} '%'
+                        </if>
+                </where>
+
+                order by con.createTime desc
+
+                limit #{skipCount},#{pageSize}
+
+        </select>
+
+        <select id="getContactsListByName" resultType="com.chuanqihou.crm.workbench.domain.Contacts">
+                select * from tbl_contacts where fullname like '%' ${fullName} '%'
+        </select>
+
+<!--        <select id="getContactsName" resultType="java.lang.String">
+                select cus.name from tbl_contacts con join tbl_customer cus on con.customerId=cus.id where cus.name like '%' #{name} '%'
+        </select>-->
+
+        <select id="getContactsName" resultType="java.lang.String">
+                select name from tbl_customer where name like '%' #{name} '%'
+        </select>
+
+        <select id="getContactsByCustomerId" resultType="com.chuanqihou.crm.workbench.domain.Contacts">
+                select *from tbl_contacts where customerId=#{customerId}
+        </select>
+
+        <select id="getContactsById" resultType="com.chuanqihou.crm.workbench.domain.Contacts">
+                select
+                        con.id,
+                        u.name as owner,
+                        con.source,
+                        cus.name as customerId,
+                        con.fullname,
+                        con.appellation,
+                        con.email,
+                        con.mphone,
+                        con.job,
+                        con.birth,
+                        con.createBy,
+                        con.createTime,
+                        con.editBy,
+                        con.editTime,
+                        con.description,
+                        con.contactSummary,
+                        con.nextContactTime,
+                        con.address
+                from tbl_contacts con join tbl_customer cus on con.customerId=cus.id
+                join tbl_user u on u.id=con.owner
+                where con.id=#{contactsId}
+        </select>
+
+        <update id="update">
+                update tbl_contacts set
+                    owner=#{owner},
+                    source=#{source},
+                    customerId=#{customerId},
+                    fullname=#{fullname},
+                    appellation=#{appellation},
+                    email=#{email},
+                    mphone=#{mphone},
+                    job=#{job},
+                    birth=#{birth},
+                    description=#{description},
+                    contactSummary=#{contactSummary},
+                    nextContactTime=#{nextContactTime},
+                    address=#{address},
+                    editTime=#{editTime},
+                    editBy=#{editBy}
+            where id=#{id}
+        </update>
+
+        <delete id="delete">
+            delete from tbl_contacts where id=#{id}
+        </delete>
+
 </mapper>
 
 

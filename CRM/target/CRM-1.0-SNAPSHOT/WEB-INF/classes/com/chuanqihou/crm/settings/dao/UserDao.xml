@@ -22,6 +22,7 @@
     <update id="updatePwd">
         update tbl_user set loginPwd=#{newPwd} where id=#{userId}
     </update>
+
 	
 </mapper>
 

@@ -133,7 +133,76 @@
     </servlet>
     <servlet-mapping>
         <servlet-name>CustomerServlet</servlet-name>
-        <url-pattern>com.chuanqihou.crm.workbench.web.controller.CustomerServlet</url-pattern>
+        <!--        根据条件查询客户信息并返回总数-->
+        <url-pattern>/workbench/customer/pageList.do</url-pattern>
+        <!--        插入一条客户信息-->
+        <url-pattern>/workbench/customer/save.do</url-pattern>
+        <!--        获取所有用户信息以及根据Id获取客户详细信息-->
+        <url-pattern>/workbench/customer/getUserListAndCustomer.do</url-pattern>
+        <!--        根据Id删除客户信息-->
+        <url-pattern>/workbench/customer/delete.do</url-pattern>
+        <!--        根据客户ID更新客户信息-->
+        <url-pattern>/workbench/customer/update.do</url-pattern>
+        <!--        获取客户详细信息,请求转发-->
+        <url-pattern>/workbench/customer/detail.do</url-pattern>
+        <!--        根据客户Id获取旗下的备注信息-->
+        <url-pattern>/workbench/customer/getRemarkListById.do</url-pattern>
+        <!--        根据客户Id插入一天备注信息-->
+        <url-pattern>/workbench/customer/saveRemark.do</url-pattern>
+        <!--        根据客户Id更新备注信息-->
+        <url-pattern>/workbench/customer/updateRemark.do</url-pattern>
+        <!--        根据备注Id删除备注信息-->
+        <url-pattern>/workbench/customer/deleteRemark.do</url-pattern>
+        <url-pattern>/workbench/customer/getTranByCustomerId.do</url-pattern>
+        <url-pattern>/workbench/customer/deleteTransactionById.do</url-pattern>
+        <url-pattern>/workbench/customer/getContactsByCustomerId.do</url-pattern>
+
+    </servlet-mapping>
+
+<!--    联系人Servlet-->
+    <servlet>
+        <servlet-name>ContactsServlet</servlet-name>
+        <servlet-class>com.chuanqihou.crm.workbench.web.controller.ContactsServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ContactsServlet</servlet-name>
+        <url-pattern>/workbench/contacts/pageList.do</url-pattern>
+        <url-pattern>/workbench/contacts/getContactsName.do</url-pattern>
+        <url-pattern>/workbench/contacts/save.do</url-pattern>
+        <url-pattern>/workbench/contacts/getUserListAndContacts.do</url-pattern>
+        <url-pattern>/workbench/contacts/update.do</url-pattern>
+        <url-pattern>/workbench/contacts/delete.do</url-pattern>
+        <url-pattern>/workbench/contacts/detail.do</url-pattern>
+        <url-pattern>/workbench/contacts/getTranByContactsId.do</url-pattern>
+        <url-pattern>/workbench/contacts/showActivity.do</url-pattern>
+        <url-pattern>/workbench/contacts/getActivityListByNameByContactsId.do</url-pattern>
+        <url-pattern>/workbench/contacts/unbund.do</url-pattern>
+        <url-pattern>/workbench/contacts/bund.do</url-pattern>
+        <url-pattern>/workbench/contacts/saveRemark.do</url-pattern>
+        <url-pattern>/workbench/contacts/getRemarkListById.do</url-pattern>
+        <url-pattern>/workbench/contacts/deleteRemark.do</url-pattern>
+        <url-pattern>/workbench/contacts/updateRemark.do</url-pattern>
+    </servlet-mapping>
+
+<!--    交易Servlet-->
+    <servlet>
+        <servlet-name>TransactionServlet</servlet-name>
+        <servlet-class>com.chuanqihou.crm.workbench.web.controller.TransactionServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>TransactionServlet</servlet-name>
+        <url-pattern>/workbench/transaction/pageList.do</url-pattern>
+        <url-pattern>/workbench/transaction/detail.do</url-pattern>
+        <url-pattern>/workbench/transaction/save.do</url-pattern>
+        <url-pattern>/workbench/transaction/getContactsListByName.do</url-pattern>
+        <url-pattern>/workbench/transaction/getCustomerName.do</url-pattern>
+        <url-pattern>/workbench/transaction/add.do</url-pattern>
+        <url-pattern>/workbench/transaction/getHistoryByTranId.do</url-pattern>
+        <url-pattern>/workbench/transaction/changeStage.do</url-pattern>
+        <url-pattern>/workbench/transaction/getCharts.do</url-pattern>
+        <url-pattern>/workbench/transaction/editShow.do</url-pattern>
+        <url-pattern>/workbench/transaction/update.do</url-pattern>
+        <url-pattern>/workbench/transaction/delete.do</url-pattern>
     </servlet-mapping>
 
 </web-app>

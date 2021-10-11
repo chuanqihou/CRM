@@ -172,6 +172,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 				var id = $xz.val();
 				$.ajax({
 					url : "workbench/activity/getUserListAndActivity.do",
+					// url : "workbench/activity/getUserListAndCustomer.do",
 					data : {
 					    //参数：需要更新的市场活动Id
 						id

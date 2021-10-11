@@ -10,6 +10,10 @@
         insert into tbl_contacts_activity_relation(id,contactsId,activityId)values(#{id},#{contactsId},#{activityId})
     </insert>
 
+    <delete id="ubund">
+        delete from tbl_contacts_activity_relation where activityId = #{activityId}
+    </delete>
+
 </mapper>
 
 

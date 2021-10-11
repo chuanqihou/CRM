@@ -20,4 +20,5 @@ public interface UserDao {
     int checkingPwd(Map<String,String> map);
 
     int updatePwd(Map<String, String> map);
+
 }

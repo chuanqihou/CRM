@@ -80,10 +80,10 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
                         //将新建备注信息添加至页面中
                         var html = "";
                         html+='<div id="'+data.ar.id+'" class="remarkDiv" style="height: 60px;">';
-                        html+='<img title="zhangsan" src="image/user-thumbnail.png" style="width: 30px; height:30px;">';
+                        html+='<img title="'+data.ar.name+'" src="image/user-thumbnail.png" style="width: 30px; height:30px;">';
                         html+='<div style="position: relative; top: -40px; left: 40px;" >';
                         html+='<h5>'+data.ar.noteContent+'</h5>';
-                        html+='<font color="gray">市场活动</font> <font color="gray">-</font> <b>'+ "${a.name}" +'</b> <small style="color: gray;"> '+(data.ar.editFlag==0?data.ar.createTime:data.ar.editTime)+' 由'+(data.ar.editFlag==0?data.ar.createBy+'创建':data.ar.editBy+'修改')+'</small>';
+                        html+='<font color="gray">市场活动</font> <font color="gray">-</font> <b>'+ "${a.name}" +'</b> <small style="color: gray;"> '+(data.ar.editFlag==0?data.ar.createTime:data.ar.editTime)+' 由'+(data.ar.editBy==null?data.ar.createBy+'创建':data.ar.editBy+'修改')+'</small>';
                         html+='<div style="position: relative; left: 500px; top: -30px; height: 30px; width: 100px; display: none;">';
                         html+='<a class="myHref" href="javascript:void(0);" onclick="editRemark(\''+data.ar.id+'\',\''+data.ar.noteContent+'\')"><span class="glyphicon glyphicon-edit" style="font-size: 20px; color: red;"></span></a>';
                         html+='&nbsp;&nbsp;&nbsp;&nbsp;';

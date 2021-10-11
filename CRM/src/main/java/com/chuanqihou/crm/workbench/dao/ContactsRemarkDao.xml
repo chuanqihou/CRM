@@ -22,6 +22,23 @@
                    #{contactsId}
                )
     </insert>
+
+    <select id="getRemarkListById" resultType="com.chuanqihou.crm.workbench.domain.ContactsRemark">
+        select * from tbl_contacts_remark where contactsId = #{contactsId}
+    </select>
+
+    <delete id="deleteRemarkById">
+        delete from tbl_contacts_remark where id = #{id}
+    </delete>
+
+    <update id="updateRemark">
+        update tbl_contacts_remark set
+           noteContent=#{noteContent},
+           editBy=#{editBy},
+           editTime=#{editTime},
+           editFlag=#{editFlag}
+        where id=#{id}
+    </update>
   	
 </mapper>
 

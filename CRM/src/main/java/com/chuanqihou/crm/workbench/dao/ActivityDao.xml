@@ -134,6 +134,18 @@
         )
     </select>
 
+    <select id="getActivityByContactsId" resultType="com.chuanqihou.crm.workbench.domain.Activity">
+        select
+            a.id,
+            a.name,
+            a.startDate,
+            a.endDate,
+            u.name as owner
+        from tbl_activity a join tbl_user u on a.owner=u.id
+                            join tbl_contacts_activity_relation car on a.id=car.activityId
+        where car.contactsId=#{contactsId}
+    </select>
+
     <!--    根据市场活动名称模糊查询市场活动信息-->
     <select id="getActivityListByName" resultType="com.chuanqihou.crm.workbench.domain.Activity">
         select
@@ -146,6 +158,35 @@
                  join tbl_user u
                       on a.owner=u.id
         where a.name like '%' #{aname} '%'
+    </select>
+
+    <select id="getActivityById" resultType="com.chuanqihou.crm.workbench.domain.Activity">
+        select
+            a.id,
+            u.name as owner,
+            a.name,
+            a.startDate,
+            a.endDate,
+            a.cost,
+            a.description,
+            a.createTime,
+            a.createBy,
+            a.editTime,
+            a.editBy
+        from tbl_activity a join tbl_user u on a.owner=u.id where a.id=#{activityId}
+    </select>
+
+    <select id="getActivityByNameByContactsID" resultType="com.chuanqihou.crm.workbench.domain.Activity">
+        select
+            a.id,
+            a.name,
+            a.startDate,
+            a.endDate,
+            u.name as owner
+        from tbl_activity a join tbl_user u on a.owner=u.id
+        where a.name like '%' #{aname} '%' and a.id not in(
+            select activityId from tbl_contacts_activity_relation where contactsId=#{contactsId}
+            )
     </select>
 
 </mapper>

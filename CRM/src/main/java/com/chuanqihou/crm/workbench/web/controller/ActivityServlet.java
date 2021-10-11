@@ -34,7 +34,6 @@ public class ActivityServlet extends HttpServlet {
      */
     @Override
     protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        System.out.println("进入到市场活动Servlet");
         String path = request.getServletPath();
         //进入获取用户信息方法（get）
         if ("/workbench/activity/getUserList.do".equals(path)){

@@ -34,4 +34,10 @@ public interface ActivityDao {
     List<Activity> getActivityByNameByClueID(Map<String, String> map);
 
     List<Activity> getActivityListByName(String aname);
+
+    Activity getActivityById(String activityId);
+
+    List<Activity> getActivityByNameByContactsID(Map<String, String> map);
+
+    List<Activity> getActivityByContactsId(String contactsId);
 }

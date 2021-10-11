@@ -327,7 +327,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 				//没有查询出数据提示语
 				if ($("#clueBody").html()=="" || $("#clueBody").html()==null){
 					html+='<tr class="active" align="center">';
-					html+='<td colspan="7">没有数据哦！</td>';
+					html+='<td colspan="10">没有数据哦！</td>';
 					html+='</tr>';
 				}
 				// 将提示语输出
@@ -767,7 +767,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 						</tr>
                         <tr class="active">
                             <td><input type="checkbox" /></td>
-                            <td><a style="text-decoration: none; cursor: pointer;" onclick="window.location.href='workbench/clue/detail.jsp';">李四先生</a></td>
+                            <td><a style="text-decoration: none; cursor: pointer;" onclick="window.location.href='workbench/clue/d.jsp';">李四先生</a></td>
                             <td>动力节点</td>
                             <td>010-84846003</td>
                             <td>12345678901</td>

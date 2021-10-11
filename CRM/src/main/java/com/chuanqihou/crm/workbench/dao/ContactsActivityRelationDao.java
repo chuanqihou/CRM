@@ -6,4 +6,6 @@ public interface ContactsActivityRelationDao {
 
     //将数据插入联系人与市场活动关系
     int save(ContactsActivityRelation contactsActivityRelation);
+
+    int ubund(String activityId);
 }

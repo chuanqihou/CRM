@@ -446,7 +446,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 					html+='<img title="'+(n.editFlag==0?n.createBy:n.editBy)+'" src="image/user-thumbnail.png" style="width: 30px; height:30px;">';
 					html+='<div style="position: relative; top: -40px; left: 40px;" >';
 					html+='<h5 id="e'+n.id+'">'+n.noteContent+'</h5>';
-					html+='<font color="gray">线索（潜在客户）</font> <font color="gray">-</font> <b>'+ "${c.fullname}"+"${c.appellation}"+'-'+"${c.company}" +'</b> <small style="color: gray;" id="s'+n.id+'"> '+(n.editFlag==0?n.createTime:n.editTime)+' 由'+(n.editFlag==0 ? n.createBy+'创建':n.editBy+'修改')+'</small>';
+					html+='<font color="gray">线索（潜在客户）</font> <font color="gray">-</font> <b>'+ "${c.fullname}"+"${c.appellation}"+'-'+"${c.company}" +'</b> <small style="color: gray;" id="s'+n.id+'"> '+(n.editBy==null?n.createTime:n.editTime)+' 由'+(n.editFlag==0 ? n.createBy+'创建':n.editBy+'修改')+'</small>';
 					html+='<div style="position: relative; left: 500px; top: -30px; height: 30px; width: 100px; display: none;">';
 					html+='<a class="myHref" href="javascript:void(0);" onclick="editRemark(\''+n.id+'\',\''+n.noteContent+'\')"><span class="glyphicon glyphicon-edit" style="font-size: 20px; color: red;"></span></a>';
 					html+='&nbsp;&nbsp;&nbsp;&nbsp;';

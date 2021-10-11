@@ -11,9 +11,7 @@ import com.chuanqihou.crm.utils.ServiceFactory;
 
 import javax.servlet.*;
 import javax.servlet.http.*;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class SysInitListener implements ServletContextListener {
 
@@ -39,6 +37,16 @@ public class SysInitListener implements ServletContextListener {
             //每取得一个key（数据字典类型），通过key获取数据
             application.setAttribute(key,map.get(key));
         }
+
+        Map<String, String> map1 = new HashMap<>();
+        ResourceBundle rb = ResourceBundle.getBundle("Stage2Possibility");
+        Enumeration<String> e = rb.getKeys();
+        while(e.hasMoreElements()){
+            String key = e.nextElement();
+            String value = rb.getString(key);
+            map1.put(key,value);
+        }
+        application.setAttribute("pmap",map1);
 
     }
 

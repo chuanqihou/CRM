@@ -69,6 +69,7 @@ public class UserServiceIml implements UserService {
     @Override
     public List<User> getUserList() {
 //        查询（调用数据库）
+        UserDao userDao = SqlSessionUtil.getSqlSession().getMapper(UserDao.class);
         List<User> userList = userDao.getUserList();
         return userList;
     }
