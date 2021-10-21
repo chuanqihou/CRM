@@ -200,29 +200,55 @@ public class CustomerServiceImpl implements CustomerService {
         return flag;
     }
 
+    /**
+     * 根据客户名称模糊查询客户信息
+     * @param name  客户名称
+     * @return  返回客户信息
+     */
     @Override
     public List<Customer> getCustomerName(String name) {
+        //调用DAO层
         List<Customer> customers = customerDao.getCustomerName(name);
         return customers;
     }
 
+    /**
+     * 通过客户Id获取交易信息
+     * @param customerId    客户Id
+     * @return  返回交易信息
+     */
     @Override
     public List<Tran> getTranByCustomerId(String customerId) {
+        //调用DAO层
         List<Tran> trans = tranDao.getTranByCustomerId(customerId);
         return trans;
     }
 
+    /**
+     * 根据交易Id删除交易信息
+     * @param tranId    交易Id
+     * @return  返回删除交易状态信息
+     */
     @Override
     public boolean deleteTransactionById(String tranId) {
+        //定义初始化状态
         boolean flag = true;
+        //调用DAO层
         if(tranDao.deleteTransactionById(tranId)!=1){
             flag = false;
         }
+        //返回状态信息
         return flag;
     }
 
+    /**
+     * 根据客户Id获取联系人信息
+     * @param customerId    客户Id
+     * @return  返回联系人信息
+     */
     @Override
     public List<Contacts> getContactsByCustomerId(String customerId) {
+        //获取处理联系人业务对象
         List<Contacts> contacts = contactsDao.getContactsByCustomerId(customerId);
         return contacts;
     }

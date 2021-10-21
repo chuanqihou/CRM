@@ -12,7 +12,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 
 <script type="text/javascript" src="jquery/jquery-1.11.1-min.js"></script>
 <script type="text/javascript" src="jquery/bootstrap_3.3.0/js/bootstrap.min.js"></script>
-<script type="text/javascript" src="jquery/bootstrap-datetimepicker-master/js/bootstrap-datetimepicker.min.js"></script>
+<script type="text/javascript" src="jquery/bootstrap-datetimepicker-master/js/bootstrap-datetimepicker.js"></script>
 <script type="text/javascript" src="jquery/bootstrap-datetimepicker-master/locale/bootstrap-datetimepicker.zh-CN.js"></script>
 
 <link rel="stylesheet" type="text/css" href="jquery/bs_pagination/jquery.bs_pagination.min.css">
@@ -21,8 +21,9 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 
 <script type="text/javascript">
 
+<%--	当页面加载完毕时执行以下函数--%>
 	$(function(){
-/*		//时间插件
+		//时间插件
 		$(".time").datetimepicker({
 			minView: "month",
 			language:  'zh-CN',
@@ -30,7 +31,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 			autoclose: true,
 			todayBtn: true,
 			pickerPosition: "bottom-left"
-		});*/
+		});
 		
 		//定制字段
 		$("#definedColumns > li").click(function(e) {
@@ -127,7 +128,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 
 		//点击修改客户信息模板
 		$("#editBtn").click(function (){
-			//获取选中需要修改市场活动信息数量
+			//获取选中需要修改客户信息数量
 			var $xz = $("input[name=xz]:checked");
 			if ($xz.length==0){
 				alert("请选择需要修改的客户信息！")
@@ -159,7 +160,6 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 						})
 						//将该客户中的信息加载到页面中
 						$("#edit-customerOwner").html(html);
-
 						$("#create-address").val(data.c.address);
 						$("#create-nextContactTime2").val(data.c.nextContactTime);
 						$("#create-contactSummary1").val(data.c.contactSummary);
@@ -387,7 +387,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
                             <div class="form-group">
                                 <label for="create-nextContactTime" class="col-sm-2 control-label">下次联系时间</label>
                                 <div class="col-sm-10" style="width: 300px;">
-                                    <input type="text" class="form-control" id="create-nextContactTime">
+                                    <input type="text" class="form-control time" id="create-nextContactTime">
                                 </div>
                             </div>
                         </div>
@@ -434,7 +434,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 							</div>
 							<label for="edit-customerName" class="col-sm-2 control-label">名称<span style="font-size: 15px; color: red;">*</span></label>
 							<div class="col-sm-10" style="width: 300px;">
-								<input type="text" class="form-control" id="edit-customerName" value="动力节点">
+								<input type="text" class="form-control" id="edit-customerName" >
 							</div>
 						</div>
 						
@@ -468,7 +468,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
                             <div class="form-group">
                                 <label for="create-nextContactTime2" class="col-sm-2 control-label">下次联系时间</label>
                                 <div class="col-sm-10" style="width: 300px;">
-                                    <input type="text" class="form-control" id="create-nextContactTime2">
+                                    <input type="text" class="form-control time" id="create-nextContactTime2">
                                 </div>
                             </div>
                         </div>

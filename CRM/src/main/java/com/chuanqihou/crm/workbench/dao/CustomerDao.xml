@@ -133,10 +133,12 @@
         from tbl_customer c join tbl_user u on c.owner=u.id where c.id=#{id}
     </select>
 
+<!--    根据客户名称模糊查询客户信息-->
     <select id="getCustomerName" resultType="com.chuanqihou.crm.workbench.domain.Customer">
         select * from tbl_customer where name like '%' #{name} '%'
     </select>
 
+<!--根据客户Id查询客户Id-->
     <select id="getIdByName" resultType="java.lang.String">
         select id from tbl_customer where name= #{customerId}
     </select>

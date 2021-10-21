@@ -165,7 +165,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 				},
 				type : "post",
 				dataType : "json",
-				//返回状态信息以及线索，
+				//返回状态信息以及备注信息，
 				success : function (data){
 					if (data.success){
 						var html = "";
@@ -196,13 +196,13 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 
 		//点击更新备注按钮，更新线索备注信息
 		$("#updateRemarkBtn").click(function(){
-			//从隐藏域中获取市场活动Id
+			//从隐藏域中获取备注Id
 			var id = $("#remarkId").val();
 			//ajax请求
 			$.ajax({
 				url : "workbench/clue/updateRemark.do",
 				data : {
-					//参数：线索Id、更改备注的内容
+					//参数：备注Id、更改备注的内容
 					"id" : id,
 					"noteContent" : $.trim($("#noteContent").val())
 				},
@@ -272,7 +272,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 			})
 		});
 
-		//点击更新市场活动按钮执行操作
+		//点击更新线索按钮执行操作
 		$("#updateBtn").click(function(){
 			//ajax局部刷新更新操作 参数：需要更新的所有信息
 			$.ajax({
@@ -320,7 +320,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 				//发送删除的ajax请求
 				$.ajax({
 					url : "workbench/clue/delete.do",
-					//参数：需要删除的市场活动Id
+					//参数：需要删除的线索Id
 					data : {
 						"id" : "${c.id}"
 					},

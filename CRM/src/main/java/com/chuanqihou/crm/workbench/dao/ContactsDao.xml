@@ -51,7 +51,7 @@
                 <where>
 
                         <if test="fullname!=null and fullname!=''">
-                                con.name like '%' #{fullname} '%'
+                                con.fullname like '%' #{fullname} '%'
                         </if>
 
                         <if test="owner!=null and owner!=''">
@@ -77,7 +77,7 @@
                 select con.id,con.fullname,u.name as owner,con.birth,cus.name as customerId,con.source from tbl_contacts con join tbl_user u on con.owner=u.id join tbl_customer cus on con.customerId=cus.id
                 <where>
                         <if test="fullname!=null and fullname!=''">
-                                con.name like '%' #{fullname} '%'
+                                con.fullname like '%' #{fullname} '%'
                         </if>
 
                         <if test="owner!=null and owner!=''">

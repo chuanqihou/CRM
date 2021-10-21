@@ -134,6 +134,7 @@
         )
     </select>
 
+    <!--  根据联系人Id查询市场活动信息  -->
     <select id="getActivityByContactsId" resultType="com.chuanqihou.crm.workbench.domain.Activity">
         select
             a.id,
@@ -159,7 +160,7 @@
                       on a.owner=u.id
         where a.name like '%' #{aname} '%'
     </select>
-
+    <!--根据市场活动Id查询市场活动信息-->
     <select id="getActivityById" resultType="com.chuanqihou.crm.workbench.domain.Activity">
         select
             a.id,
@@ -176,6 +177,7 @@
         from tbl_activity a join tbl_user u on a.owner=u.id where a.id=#{activityId}
     </select>
 
+<!--    根据排除掉的联系人Id和市场活动名称模糊查询市场活动信息-->
     <select id="getActivityByNameByContactsID" resultType="com.chuanqihou.crm.workbench.domain.Activity">
         select
             a.id,

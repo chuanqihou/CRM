@@ -78,6 +78,7 @@ public class ClueServlet extends HttpServlet {
          //删除线索备注信息
         }else if ("/workbench/clue/deleteRemark.do".equals(path)){
             deleteRemark(request,response);
+        //更新线索备注信息
         }else if ("/workbench/clue/updateRemark.do".equals(path)){
             updateRemark(request,response);
         }

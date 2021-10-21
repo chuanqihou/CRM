@@ -83,8 +83,17 @@
 		$(".myHref").mouseout(function(){
 			$(this).children("span").css("color","#E6E6E6");
 		});
-		
-		
+
+		//给备注加样式
+		$("#remarkBody").on("mouseover",".remarkDiv",function(){
+			$(this).children("div").children("div").show();
+		})
+		$("#remarkBody").on("mouseout",".remarkDiv",function(){
+			$(this).children("div").children("div").hide();
+		})
+
+		showRemarkList();
+
 		//阶段提示框
 		$(".mystage").popover({
             trigger:'manual',
@@ -220,8 +229,38 @@
 
 		}
 	}
-	
-	
+
+	function showRemarkList(){
+		$.ajax({
+			url : "workbench/transaction/getRemarkListById.do",
+			data : {
+				//参数：客户Id
+				"transactionId" : "${t.id}"
+			},
+			type : "get",
+			dataType : "json",
+			success : function (data){
+				//拼接字符串
+				var html = "";
+				$.each(data,function (i,n){
+					html+='<div id="'+n.id+'" class="remarkDiv" style="height: 60px;">';
+					html+='<img title="'+(n.editFlag==0?n.createBy:n.editBy)+'" src="image/user-thumbnail.png" style="width: 30px; height:30px;">';
+					html+='<div style="position: relative; top: -40px; left: 40px;" >';
+					html+='<h5 id="e'+n.id+'">'+n.noteContent+'</h5>';
+					html+='<font color="gray">交易</font> <font color="gray">-</font> <b>'+ "${t.name}" +'</b> <small style="color: gray;" id="s'+n.id+'"> '+(n.editFlag==0?n.createTime:n.editTime)+' 由'+(n.editFlag==0?n.createBy+'创建':n.editBy+'修改')+'</small>';
+					html+='<div style="position: relative; left: 500px; top: -30px; height: 30px; width: 100px; display: none;">';
+					html+='<a class="myHref" href="javascript:void(0);" onclick="editRemark(\''+n.id+'\',\''+n.noteContent+'\')"><span class="glyphicon glyphicon-edit" style="font-size: 20px; color: red;"></span></a>';
+					html+='&nbsp;&nbsp;&nbsp;&nbsp;';
+					html+='<a class="myHref" href="javascript:void(0);" onclick="deleteRemark(\''+n.id+'\')"><span class="glyphicon glyphicon-remove" style="font-size: 20px; color: red;"></span></a>';
+					html+='</div>';
+					html+='</div>';
+					html+='</div>';
+				})
+				//将备注信息添加到Id为remarkDiv之前
+				$("#remarkDiv").before(html);
+			}
+		})
+	}
 	
 </script>
 
@@ -430,12 +469,12 @@
 	</div>
 
 	<!-- 备注 -->
-	<div style="position: relative; top: 100px; left: 40px;">
+	<div id="remarkBody" style="position: relative; top: 100px; left: 40px;">
 		<div class="page-header">
 			<h4>备注</h4>
 		</div>
 
-		<!-- 备注1 -->
+<%--		<!-- 备注1 -->
 		<div class="remarkDiv" style="height: 60px;">
 			<img title="zhangsan" src="image/user-thumbnail.png" style="width: 30px; height:30px;">
 			<div style="position: relative; top: -40px; left: 40px;" >
@@ -461,14 +500,14 @@
 					<a class="myHref" href="javascript:void(0);"><span class="glyphicon glyphicon-remove" style="font-size: 20px; color: #E6E6E6;"></span></a>
 				</div>
 			</div>
-		</div>
+		</div>--%>
 
 		<div id="remarkDiv" style="background-color: #E6E6E6; width: 870px; height: 90px;">
 			<form role="form" style="position: relative;top: 10px; left: 10px;">
 				<textarea id="remark" class="form-control" style="width: 850px; resize : none;" rows="2"  placeholder="添加备注..."></textarea>
 				<p id="cancelAndSaveBtn" style="position: relative;left: 737px; top: 10px; display: none;">
 					<button id="cancelBtn" type="button" class="btn btn-default">取消</button>
-					<button type="button" class="btn btn-primary">保存</button>
+					<button type="button" class="btn btn-primary" id="saveRemarkBtn" >保存</button>
 				</p>
 			</form>
 		</div>

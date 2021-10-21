@@ -430,6 +430,11 @@ public class ClueServiceImpl implements ClueService {
         return flag;
     }
 
+    /**
+     * 删除线索备注信息
+     * @param id    备注ID
+     * @return  返回删除状态信息
+     */
     @Override
     public boolean deleteRemark(String id) {
         //定义初始化状态
@@ -444,6 +449,11 @@ public class ClueServiceImpl implements ClueService {
         return flag;
     }
 
+    /**
+     * 更新线索备注信息
+     * @param clueRemark   参数：线索备注信息
+     * @return  返回更新状态信息
+     */
     @Override
     public boolean updateRemark(ClueRemark clueRemark) {
         //定义初始化状态

@@ -63,39 +63,74 @@ public class CustomerServlet extends HttpServlet {
         //根据备注Id删除备注信息
         }else if ("/workbench/customer/deleteRemark.do".equals(path)){
             deleteRemark(request,response);
+        //根据客户信息Id查找交易信息
         }else if ("/workbench/customer/getTranByCustomerId.do".equals(path)){
             getTranByCustomerId(request,response);
+        //根据交易Id删除交易信息
         }else if ("/workbench/customer/deleteTransactionById.do".equals(path)){
             deleteTransactionById(request,response);
+        //根据客户Id查找联系人信息
         }else if ("/workbench/customer/getContactsByCustomerId.do".equals(path)){
             getContactsByCustomerId(request,response);
         }
     }
 
+    /**
+     * 根据客户Id查找联系人信息
+     * @param request   请求
+     * @param response  响应
+     */
     private void getContactsByCustomerId(HttpServletRequest request, HttpServletResponse response) {
+        //获取处理客户业务对象
         CustomerService customerService = (CustomerService) ServiceFactory.getService(new CustomerServiceImpl());
+        //获取参数（客户Id）
         String customerId = request.getParameter("id");
+        //调用业务层处理相关信息得到客户信息
         List<Contacts> contacts = customerService.getContactsByCustomerId(customerId);
+        //将客户信息展示到前端
         PrintJson.printJsonObj(response,contacts);
     }
 
+    /**
+     * 根据交易Id删除交易信息
+     * @param request   请求
+     * @param response  响应
+     */
     private void deleteTransactionById(HttpServletRequest request, HttpServletResponse response) {
+        //获取参数信息（交易ID）
         String tranId = request.getParameter("tranId");
+        //获取处理客户业务对象
         CustomerService customerService = (CustomerService) ServiceFactory.getService(new CustomerServiceImpl());
+        //调用业务层方法获取删状态
         boolean flag = customerService.deleteTransactionById(tranId);
+        //将删除状态信息转换成json数据并传入前端
         PrintJson.printJsonFlag(response,"success",flag);
     }
 
+    /**
+     *根据客户Id获取交易信息
+     * @param request   请求
+     * @param response  响应
+     */
     private void getTranByCustomerId(HttpServletRequest request, HttpServletResponse response) {
+        //获取处理客户业务对象
         CustomerService customerService = (CustomerService) ServiceFactory.getService(new CustomerServiceImpl());
+        //获取参数信息（客户Id）
         String customerId = request.getParameter("id");
+        //调用业务层方法
         List<Tran> trans = customerService.getTranByCustomerId(customerId);
+        //从全局作用域中取得交易阶段以及对应的可能性数据
         Map<String,String> pMap = (Map<String, String>) request.getServletContext().getAttribute("pmap");
+        //遍历map集合
         for (Tran t : trans) {
+            //获得每个交易信息对应的交易阶段
             String stage = t.getStage();
+            //将交易阶段作为key传入map中取得可能性
             String possibility = pMap.get(stage);
+            //将可能性封装到交易类中
             t.setPossibility(possibility);
         }
+        //将数据转换成json数据并传入前端
         PrintJson.printJsonObj(response,trans);
     }
 

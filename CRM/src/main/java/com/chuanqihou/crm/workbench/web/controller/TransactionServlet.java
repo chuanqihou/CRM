@@ -12,10 +12,7 @@ import com.chuanqihou.crm.utils.PrintJson;
 import com.chuanqihou.crm.utils.ServiceFactory;
 import com.chuanqihou.crm.utils.UUIDUtil;
 import com.chuanqihou.crm.vo.PaginationVo;
-import com.chuanqihou.crm.workbench.domain.Contacts;
-import com.chuanqihou.crm.workbench.domain.Customer;
-import com.chuanqihou.crm.workbench.domain.Tran;
-import com.chuanqihou.crm.workbench.domain.TranHistory;
+import com.chuanqihou.crm.workbench.domain.*;
 import com.chuanqihou.crm.workbench.service.ContactsService;
 import com.chuanqihou.crm.workbench.service.CustomerService;
 import com.chuanqihou.crm.workbench.service.TransactionService;
@@ -61,7 +58,16 @@ public class TransactionServlet extends HttpServlet {
             update(request,response);
         }else if ("/workbench/transaction/delete.do".equals(path)){
             delete(request,response);
+        }else if ("/workbench/transaction/getRemarkListById.do".equals(path)){
+            getRemarkListById(request,response);
         }
+    }
+
+    private void getRemarkListById(HttpServletRequest request, HttpServletResponse response) {
+        TransactionService transactionService = (TransactionService) ServiceFactory.getService(new TransactionServiceImpl());
+        String transactionId = request.getParameter("transactionId");
+        List<TranRemark> tranRemarks = transactionService.getRemarkListById(transactionId);
+        PrintJson.printJsonObj(response,tranRemarks);
     }
 
     private void delete(HttpServletRequest request, HttpServletResponse response) {

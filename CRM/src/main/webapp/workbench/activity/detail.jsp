@@ -8,9 +8,12 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 <meta charset="UTF-8">
 
 <link href="jquery/bootstrap_3.3.0/css/bootstrap.min.css" type="text/css" rel="stylesheet" />
+<link href="jquery/bootstrap-datetimepicker-master/css/bootstrap-datetimepicker.min.css" type="text/css" rel="stylesheet" />
 <script type="text/javascript" src="jquery/jquery-1.11.1-min.js"></script>
 <script type="text/javascript" src="jquery/bootstrap_3.3.0/js/bootstrap.min.js"></script>
 
+<script type="text/javascript" src="jquery/bootstrap-datetimepicker-master/js/bootstrap-datetimepicker.js"></script>
+<script type="text/javascript" src="jquery/bootstrap-datetimepicker-master/locale/bootstrap-datetimepicker.zh-CN.js"></script>
 <script type="text/javascript">
 
 	//默认情况下取消和保存按钮是隐藏的
@@ -118,6 +121,8 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
                     //返回状态信息以及市场活动信息
                     if (data.success){
                         //将更新后的数据更新到页面
+                        // showRemarkList()
+                        alert("#e"+id)
                         $("#e"+id).html(data.ar.noteContent);
                         $("#s"+id).html(data.ar.editTime+" 由 "+data.ar.editBy);
                         //关闭更新模态窗口
@@ -240,7 +245,8 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 					html+='<div id="'+n.id+'" class="remarkDiv" style="height: 60px;">';
 					html+='<img title="'+(n.editFlag==0?n.createBy:n.editBy)+'" src="image/user-thumbnail.png" style="width: 30px; height:30px;">';
 					html+='<div style="position: relative; top: -40px; left: 40px;" >';
-					html+='<h5 id="e'+n.id+'">'+n.noteContent+'</h5>';
+					// html+='<h5 id="e'+n.id+'">'+n.noteContent+'</h5>';
+                    html+='<h5 id="e'+n.id+'">'+n.noteContent+'</h5>';
 					html+='<font color="gray">市场活动</font> <font color="gray">-</font> <b>'+ "${a.name}" +'</b> <small style="color: gray;" id="s'+n.id+'"> '+(n.editFlag==0?n.createTime:n.editTime)+' 由'+(n.editFlag==0?n.createBy+'创建':n.editBy+'修改')+'</small>';
 					html+='<div style="position: relative; left: 500px; top: -30px; height: 30px; width: 100px; display: none;">';
 					html+='<a class="myHref" href="javascript:void(0);" onclick="editRemark(\''+n.id+'\',\''+n.noteContent+'\')"><span class="glyphicon glyphicon-edit" style="font-size: 20px; color: red;"></span></a>';

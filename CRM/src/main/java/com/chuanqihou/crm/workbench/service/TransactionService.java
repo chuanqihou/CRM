@@ -4,6 +4,7 @@ import com.chuanqihou.crm.vo.PaginationVo;
 import com.chuanqihou.crm.workbench.domain.Customer;
 import com.chuanqihou.crm.workbench.domain.Tran;
 import com.chuanqihou.crm.workbench.domain.TranHistory;
+import com.chuanqihou.crm.workbench.domain.TranRemark;
 
 import java.util.List;
 import java.util.Map;
@@ -31,4 +32,6 @@ public interface TransactionService {
     boolean update(Tran tran, String customerName);
 
     boolean delete(String id);
+
+    List<TranRemark> getRemarkListById(String transactionId);
 }

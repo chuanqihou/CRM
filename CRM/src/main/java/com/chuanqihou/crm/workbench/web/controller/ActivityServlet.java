@@ -77,7 +77,7 @@ public class ActivityServlet extends HttpServlet {
      * @param response  响应
      */
     private void updataRemark(HttpServletRequest request, HttpServletResponse response) {
-        //获取市场活动信息Service业务逻辑对象（反射机制）
+        //获取市场活动信息Service业务逻辑代理对象（反射机制）【动态代理】
         ActivityService activityService = (ActivityService) ServiceFactory.getService(new ActivityServiceImpl());
         //获取参数
         String id = request.getParameter("id");

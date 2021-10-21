@@ -188,7 +188,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 			}
 		});
 
-		//点击更新市场活动按钮执行操作
+		//点击更新线索按钮执行操作
 		$("#updateBtn").click(function(){
 			//ajax局部刷新更新操作 参数：需要更新的所有信息
 			$.ajax({
@@ -232,7 +232,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 			})
 		});
 
-		//点击删除按钮
+		//点击删除线索按钮
 		$("#deleteBtn").click(function (){
 			//获取选中的线索
 			var $xz = $("input[name=xz]:checked");

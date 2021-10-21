@@ -82,7 +82,7 @@
 
     <!--    根据条件查询客户信息列表总数动态SQL-->
     <select id="getActivityByCondition" resultType="com.chuanqihou.crm.workbench.domain.Tran">
-        select tr.id,tr.name,cus.name as customerId,u.name as owner,tr.stage,tr.type,tr.source,tr.createBy
+        select tr.id,tr.name,cus.name as customerId,u.name as owner,tr.stage,tr.type,tr.source,con.fullname as contactsId
 
         from tbl_tran tr join tbl_user u on tr.owner=u.id
             join tbl_customer cus on tr.customerId=cus.id

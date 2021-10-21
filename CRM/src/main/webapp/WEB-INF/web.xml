@@ -203,6 +203,7 @@
         <url-pattern>/workbench/transaction/editShow.do</url-pattern>
         <url-pattern>/workbench/transaction/update.do</url-pattern>
         <url-pattern>/workbench/transaction/delete.do</url-pattern>
+        <url-pattern>/workbench/transaction/getRemarkListById.do</url-pattern>
     </servlet-mapping>
 
 </web-app>

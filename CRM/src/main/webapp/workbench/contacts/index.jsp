@@ -13,7 +13,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 
 <script type="text/javascript" src="jquery/jquery-1.11.1-min.js"></script>
 <script type="text/javascript" src="jquery/bootstrap_3.3.0/js/bootstrap.min.js"></script>
-<script type="text/javascript" src="jquery/bootstrap-datetimepicker-master/js/bootstrap-datetimepicker.min.js"></script>
+<script type="text/javascript" src="jquery/bootstrap-datetimepicker-master/js/bootstrap-datetimepicker.js"></script>
 <script type="text/javascript" src="jquery/bootstrap-datetimepicker-master/locale/bootstrap-datetimepicker.zh-CN.js"></script>
 
 <link rel="stylesheet" type="text/css" href="jquery/bs_pagination/jquery.bs_pagination.min.css">
@@ -25,14 +25,15 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 <script type="text/javascript">
 
 	$(function(){
-/*		$(".time").datetimepicker({
+		//时间插件
+		$(".time").datetimepicker({
 			minView: "month",
 			language:  'zh-CN',
 			format: 'yyyy-mm-dd',
 			autoclose: true,
 			todayBtn: true,
 			pickerPosition: "bottom-left"
-		});*/
+		});
 
 		//定制字段
 		$("#definedColumns > li").click(function(e) {
@@ -46,7 +47,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 		//点击查询按钮
 		$("#searchBtn").click(function (){
 			//将查询条件隐藏在隐藏域中
-			$("#hidden-fullname").val($.trim($("#search-name").val()));
+			$("#hidden-fullname").val($.trim($("#search-fullname").val()));
 			$("#hidden-owner").val($.trim($("#search-owner").val()));
 			$("#hidden-birth").val($.trim($("#search-birth").val()));
 			$("#hidden-source").val($.trim($("#search-source").val()));
@@ -67,7 +68,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 			$("#qx").prop("checked",$("input[name=xz]").length==$("input[name=xz]:checked").length)
 		});
 
-		//点击调用创建模态窗口
+		//点击调用创建联系人模态窗口
 		$("#addBtn").click(function (){
 			//加载用户信息下拉框
 			$.ajax({
@@ -93,7 +94,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 			})
 		})
 
-		//点击添加市场活动信息
+		//点击添加联系人信息
 		$("#saveBtn").click(function(){
 			//ajax局部刷新添加操作
 			$.ajax({
@@ -123,14 +124,15 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 						//隐藏创建模态窗口
 						$("#createContactsModal").modal("hide");
 						//刷新列表，跳转到第一页，维持用户选择每页展示数据条数
-						pageList(1,$("#activityPage").bs_pagination('getOption', 'rowsPerPage'));
+						pageList(1,$("#contactsPage").bs_pagination('getOption', 'rowsPerPage'));
 					}else {
-						alert("添加市场活动失败！")
+						alert("添加联系人信息失败！")
 					}
 				}
 			})
 		});
 
+		//【创建】根据模糊查询自动填充客户名称
 		$("#create-customerName").typeahead({
 			source: function (query, process) {
 				$.get(
@@ -143,29 +145,31 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 						"json"
 				);
 			},
+			//延迟
 			delay: 1500
 		});
 
+		//更新联系人信息（获取需要更新联系人信息的数据）
 		$("#updateContacts").click(function(){
-			//获取选中需要修改市场活动信息数量
+			//获取选中需要修改联系人信息数量
 			var $xz = $("input[name=xz]:checked");
 			if ($xz.length==0){
 				alert("请选择需要修改的联系人信息！")
 			}else if ($xz.length>=2){
 				alert("只能选择一条记录进行修改！")
 			}else {
-				//获取选择需要更新的客户信息Id
+				//获取选择需要更新的联系人Id
 				var id = $xz.val();
 				$("#edit-id").val(id);
 				$.ajax({
 					url : "workbench/contacts/getUserListAndContacts.do",
 					data : {
-						//参数：需要更新的客户信息Id
+						//参数：需要更新的联系人Id
 						"id" : id
 					},
 					type : "get",
 					dataType : "json",
-					//返回根据Id查询出的客户信息以及所有用户信息
+					//返回根据Id查询出的联系人信息以及所有用户信息
 					success : function (data){
 						//拼接字符串
 						var html = "";
@@ -179,7 +183,6 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 						})
 						//将该客户中的信息加载到页面中
 						$("#edit-contactsOwner").html(html);
-
 						$("#edit-clueSource1").val(data.c.source);
 						$("#edit-surname").val(data.c.fullname);
 						$("#edit-call").val(data.c.appellation);
@@ -199,6 +202,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 			}
 		})
 
+		//【修改】根据模糊查询自动填充客户名称
 		$("#edit-customerName").typeahead({
 			source: function (query, process) {
 				$.get(
@@ -214,6 +218,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 			delay: 1500
 		});
 
+		//点击更新按钮
 		$("#updateBtn").click(function(){
 			var id = $("#edit-id").val();
 			//ajax局部刷新添加操作
@@ -245,7 +250,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 						//隐藏创建模态窗口
 						$("#editContactsModal").modal("hide");
 						//刷新列表，跳转到第一页，维持用户选择每页展示数据条数
-						pageList(1,$("#activityPage").bs_pagination('getOption', 'rowsPerPage'));
+						pageList(1,$("#contactsPage").bs_pagination('getOption', 'rowsPerPage'));
 					}else {
 						alert("修改联系人信息失败！")
 					}
@@ -253,6 +258,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 			})
 		})
 
+		//删除联系人信息
 		$("#deleteBtn").click(function(){
 			//获取选中需要修改市场活动信息数量
 			var $xz = $("input[name=xz]:checked");
@@ -260,7 +266,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 				alert("请选择需要删除的联系人！")
 			}else {
 				if (confirm("确定删除数据吗？")){
-					//拼接参数（需要删除客户信息的Id）
+					//拼接参数（需要删除的联系人Id）
 					var param = "";
 					for (var i = 0;i<$xz.length;i++){
 						param+="id="+$($xz[i]).val();
@@ -272,7 +278,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 					//发送删除的ajax请求
 					$.ajax({
 						url : "workbench/contacts/delete.do",
-						//参数：需要删除的客户信息Id
+						//参数：需要删除的联系人Id
 						data : param,
 						type : "post",
 						dataType : "json",
@@ -285,7 +291,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 								pageList(1,$("#contactsPage").bs_pagination('getOption', 'rowsPerPage'));
 							}else {
 								//删除失败提示
-								alert("删除客户信息失败！")
+								alert("删除联系人信息失败！")
 							}
 						}
 					})
@@ -295,32 +301,32 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 
 	});
 
-	//根据条件获取客户信息列表并分页
+	//根据条件获取联系人信息列表并分页
 	function pageList(pageNo,pageSize) {
 		//将隐藏域中的查询条件重新展示
-		$("#search-fullname").val($.trim($("#hidden-fullname").val()));
-		$("#search-owner").val($.trim($("#hidden-owner").val()));
-		$("#search-customerName").val($.trim($("#hidden-customerName").val()));
-		$("#search-birth").val($.trim($("#hidden-birth").val()));
+		 $("#search-fullname").val($.trim($("#hidden-fullname").val()));
+		 $("#search-owner").val($.trim($("#hidden-owner").val()));
+		 $("#search-customerName").val($.trim($("#hidden-customerName").val()));
+		 $("#search-birth").val($.trim($("#hidden-birth").val()));
 		//调用ajax方法根据条件获取所有客户信息列表
 		$.ajax({
 			url: "workbench/contacts/pageList.do",
 			data: {
 				"pageNo": pageNo,		//页码
 				"pageSize": pageSize,		//每页展示数据条数
-				"fullname": $.trim($("#search-fullname").val()),		//查询条件：客户名称
+				"fullname": $.trim($("#search-fullname").val()),		//查询条件：联系人姓名
 				"owner": $.trim($("#search-owner").val()),		//查询条件：所有者
-				"customerName": $.trim($("#search-customerName").val()),		//查询条件：客户座机
-				"birth": $.trim($("#search-birth").val()),
-				"source": $.trim($("#search-source").val()),		//查询条件：客户网站
+				"customerName": $.trim($("#search-customerName").val()),		//查询条件：客户名称
+				"birth": $.trim($("#search-birth").val()),				//查询条件：联系人生日
+				"source": $.trim($("#search-source").val()),		//查询条件：来源
 			},
 			type: "get",
 			dataType: "json",
-			//返回根据条件查询出的所有客户信息，以及客户总数
+			//返回根据条件查询出的所有联系人信息，以及联系人总数
 			success: function (data) {
 				//定义一个字符串
 				var html = "";
-				//使用$.each循环取出客户数据
+				//使用$.each循环取出联系人数据
 				$.each(data.dataList, function (i, n) {
 					html+='<tr>';
 					html+='<td><input type="checkbox" name="xz" value="' + n.id + '"/></td>';
@@ -445,7 +451,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 							</div>
 							<label for="create-birth" class="col-sm-2 control-label">生日</label>
 							<div class="col-sm-10" style="width: 300px;">
-								<input type="text" class="form-control" id="create-birth">
+								<input type="text" class="form-control time" id="create-birth">
 							</div>
 						</div>
 						
@@ -535,7 +541,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 						<div class="form-group">
 							<label for="edit-surname" class="col-sm-2 control-label">姓名<span style="font-size: 15px; color: red;">*</span></label>
 							<div class="col-sm-10" style="width: 300px;">
-								<input type="text" class="form-control" id="edit-surname" value="李四">
+								<input type="text" class="form-control" id="edit-surname" >
 							</div>
 							<label for="edit-call" class="col-sm-2 control-label">称呼</label>
 							<div class="col-sm-10" style="width: 300px;">
@@ -551,29 +557,29 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 						<div class="form-group">
 							<label for="edit-job" class="col-sm-2 control-label">职位</label>
 							<div class="col-sm-10" style="width: 300px;">
-								<input type="text" class="form-control" id="edit-job" value="CTO">
+								<input type="text" class="form-control" id="edit-job" >
 							</div>
 							<label for="edit-mphone" class="col-sm-2 control-label">手机</label>
 							<div class="col-sm-10" style="width: 300px;">
-								<input type="text" class="form-control" id="edit-mphone" value="12345678901">
+								<input type="text" class="form-control" id="edit-mphone" >
 							</div>
 						</div>
 						
 						<div class="form-group">
 							<label for="edit-email" class="col-sm-2 control-label">邮箱</label>
 							<div class="col-sm-10" style="width: 300px;">
-								<input type="text" class="form-control" id="edit-email" value="lisi@bjpowernode.com">
+								<input type="text" class="form-control" id="edit-email" >
 							</div>
 							<label for="edit-birth" class="col-sm-2 control-label">生日</label>
 							<div class="col-sm-10" style="width: 300px;">
-								<input type="text" class="form-control" id="edit-birth">
+								<input type="text" class="form-control time" id="edit-birth">
 							</div>
 						</div>
 						
 						<div class="form-group">
 							<label for="edit-customerName" class="col-sm-2 control-label">客户名称</label>
 							<div class="col-sm-10" style="width: 300px;">
-								<input type="text" class="form-control" id="edit-customerName" placeholder="支持自动补全，输入客户不存在则新建" value="动力节点">
+								<input type="text" class="form-control" id="edit-customerName" placeholder="支持自动补全，输入客户不存在则新建" >
 							</div>
 						</div>
 						
@@ -596,7 +602,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 							<div class="form-group">
 								<label for="create-nextContactTime" class="col-sm-2 control-label">下次联系时间</label>
 								<div class="col-sm-10" style="width: 300px;">
-									<input type="text" class="form-control" id="create-nextContactTime">
+									<input type="text" class="form-control time" id="create-nextContactTime">
 								</div>
 							</div>
 						</div>
@@ -661,7 +667,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 				  <div class="form-group">
 				    <div class="input-group">
 				      <div class="input-group-addon">客户名称</div>
-				      <input class="form-control" type="text" id="customerName">
+				      <input class="form-control" type="text" id="search-customerName">
 				    </div>
 				  </div>
 				  
@@ -682,7 +688,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 				  <div class="form-group">
 				    <div class="input-group">
 				      <div class="input-group-addon">生日</div>
-				      <input class="form-control" type="text" id="search-birth">
+				      <input class="form-control time" type="text" id="search-birth">
 				    </div>
 				  </div>
 				  

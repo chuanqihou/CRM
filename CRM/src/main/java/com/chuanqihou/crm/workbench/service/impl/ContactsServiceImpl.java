@@ -9,7 +9,6 @@ import com.chuanqihou.crm.workbench.dao.*;
 import com.chuanqihou.crm.workbench.domain.*;
 import com.chuanqihou.crm.workbench.service.ContactsService;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

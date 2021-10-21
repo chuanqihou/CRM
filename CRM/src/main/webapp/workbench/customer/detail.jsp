@@ -9,8 +9,12 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 <meta charset="UTF-8">
 
 <link href="jquery/bootstrap_3.3.0/css/bootstrap.min.css" type="text/css" rel="stylesheet" />
+<link href="jquery/bootstrap-datetimepicker-master/css/bootstrap-datetimepicker.min.css" type="text/css" rel="stylesheet" />
 <script type="text/javascript" src="jquery/jquery-1.11.1-min.js"></script>
 <script type="text/javascript" src="jquery/bootstrap_3.3.0/js/bootstrap.min.js"></script>
+
+<script type="text/javascript" src="jquery/bootstrap-datetimepicker-master/js/bootstrap-datetimepicker.js"></script>
+<script type="text/javascript" src="jquery/bootstrap-datetimepicker-master/locale/bootstrap-datetimepicker.zh-CN.js"></script>
 
 <script type="text/javascript">
 
@@ -19,6 +23,17 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 
 	//页面加载完成之后加载执行
 	$(function(){
+
+		//时间插件
+		$(".time").datetimepicker({
+			minView: "month",
+			language:  'zh-CN',
+			format: 'yyyy-mm-dd',
+			autoclose: true,
+			todayBtn: true,
+			pickerPosition: "top-right"
+		});
+
 		$("#remark").focus(function(){
 			if(cancelAndSaveBtnDefault){
 				//设置remarkDiv的高度为130px
@@ -88,7 +103,6 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 					})
 					//将该客户中的信息加载到页面中
 					$("#edit-customerOwner").html(html);
-
 					$("#create-address").val(data.c.address);
 					$("#create-nextContactTime2").val(data.c.nextContactTime);
 					$("#create-contactSummary1").val(data.c.contactSummary);
@@ -127,6 +141,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 						//更新成功，隐藏页面模板
 						$("#editCustomerModal").modal("hide");
 						var id = "${c.id}";
+						//重新加载详细信息
 						self.location.href="/crm/workbench/customer/detail.do?id="+id+"";
 					}else {
 						alert("修改客户信息失败！")
@@ -150,6 +165,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 					//返回删除状态信息
 					success : function (data){
 						if (data.success){
+							//返回至客户信息朱页面
 							self.location.href="/crm/workbench/customer/index.jsp";
 						}else {
 							//删除失败提示
@@ -160,9 +176,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 			}
 		});
 
-		showRemarkList()
-
-		//新建和保存备注信息
+		//新建和保存客户备注信息
 		$("#saveRemarkBtn").click(function (){
 			//ajax局部
 			$.ajax({
@@ -182,7 +196,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 						//将新建备注信息添加至页面中
 						var html = "";
 						html+='<div id="'+data.ar.id+'" class="remarkDiv" style="height: 60px;">';
-						html+='<img title="zhangsan" src="image/user-thumbnail.png" style="width: 30px; height:30px;">';
+						html+='<img title="${c.name}" src="image/user-thumbnail.png" style="width: 30px; height:30px;">';
 						html+='<div style="position: relative; top: -40px; left: 40px;" >';
 						html+='<h5 id="e'+data.ar.id+'">'+data.ar.noteContent+'</h5>';
 						html+='<font color="gray">客户</font> <font color="gray">-</font> <b>'+ "${c.name}" +'</b> <small style="color: gray; id="s'+data.ar.id+'"> '+(data.ar.editFlag==0?data.ar.createTime:data.ar.editTime)+' 由'+(data.ar.editFlag==0?data.ar.createBy+'创建':data.ar.editBy+'修改')+'</small>';
@@ -210,7 +224,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 			$.ajax({
 				url : "workbench/customer/updateRemark.do",
 				data : {
-					//参数：市场活动Id、更改备注的内容
+					//参数：客户Id、更改备注的内容
 					"id" : id,
 					"noteContent" : $.trim($("#noteContent").val())
 				},
@@ -257,11 +271,13 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 			})
 		})
 
+		//点击保存联系人信息按钮
 		$("#saveBtn").click(function(){
 			//ajax局部刷新添加操作
 			$.ajax({
 				url : "workbench/contacts/save.do",
 				data : {
+					//参数
 					"owner" : $.trim($("#create-marketContactsOwner").val()),
 					"source" : $.trim($("#create-clueSource").val()),
 					"customerId" : $.trim($("#create-customerName").val()),
@@ -281,20 +297,24 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 				//获取添加状态信息
 				success : function (data){
 					if (data.success){
-						//添加成功后清空添加表单
+						//添加联系人信息成功后清空添加表单
 						$("#contactsSaveForm")[0].reset();
 						//隐藏创建模态窗口
 						$("#createContactsModal").modal("hide");
-						//刷新列表，跳转到第一页，维持用户选择每页展示数据条数
+						//刷新联系人列表
                         showContacts();
 					}else {
-						alert("添加市场活动失败！")
+						alert("添加联系人信息失败！")
 					}
 				}
 			})
 		});
 
+		//展示备注信息
+		showRemarkList()
+		//展示客户交易信息
 		showTransaction();
+		//展示客户联系人信息
 		showContacts();
 
 	});
@@ -367,10 +387,12 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 		$("#remarkId").val(id);
 	}
 
+	//展示客户交易信息方法
 	function showTransaction(){
 		$.ajax({
 			url : "workbench/customer/getTranByCustomerId.do",
 			data : {
+				//参数：客户Id
 				"id" : "${c.id}"
 			},
 			type : "get",
@@ -393,24 +415,31 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 		})
 	}
 
+	//删除客户交易信息方法
 	function deleteTransaction(id){
+		//展示提示页
 		$("#removeTransactionModal").modal("show");
+		//点击删除按钮
 		$("#deleteTransactionBtn").click(function (){
+			//调用删除方法
 			deleteTransactionBtn(id);
 		})
 	}
-
+	//删除客户交易信息按钮
 	function deleteTransactionBtn(id){
 		$.ajax({
 			url : "workbench/customer/deleteTransactionById.do",
 			data : {
+				//参数：交易Id
 				"tranId" : id
 			},
 			type : "post",
 			dataType : "json",
 			success : function (data){
 				if (data.success){
+					//隐藏提示窗口
 					$("#removeTransactionModal").modal("hide");
+					//刷新交易列表
 					showTransaction();
 				}else {
 					alert("删除交易失败！")
@@ -419,26 +448,58 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 		})
 	}
 
+	//展示客户联系人方法
 	function showContacts(){
 		$.ajax({
 			url : "workbench/customer/getContactsByCustomerId.do",
 			data : {
+				//参数：客户Id
 				"id" : "${c.id}"
 			},
 			type : "get",
 			dataType : "json",
 			success : function (data){
+				//拼接字符串
 				var html = "";
 				$.each(data,function(i,n){
 					html += '<tr>';
 					html += '<td><a href="workbench/contacts/detail.do?id='+n.id+'" style="text-decoration: none;">'+n.fullname+'</a></td>';
 					html += '<td>'+n.email+'</td>';
 					html += '<td>'+n.mphone+'</td>';
-					html += '<td><a href="javascript:void(0);" data-toggle="modal" data-target="#removeContactsModal" style="text-decoration: none;"><span class="glyphicon glyphicon-remove"></span>删除</a></td>';
+					html += '<td><a onclick="deleteContact(\''+n.id+'\')" href="javascript:void(0);"  style="text-decoration: none;"><span class="glyphicon glyphicon-remove"></span>删除</a></td>';
 					html += '</tr>';
 				})
+				//将客户联系人列表信息展示
 				$("#contactsTbody").html(html);
 			}
+		})
+	}
+
+	//删除客户联系人方法
+	function deleteContact(id){
+		//提示窗口
+		$("#removeContactsModal").modal("show");
+		//删除按钮
+		$("#deleteContacts").click(function (){
+			$.ajax({
+				url : "workbench/contacts/delete.do",
+				data : {
+					//联系人Id
+					"id" : id
+				},
+				type : "post",
+				dataType : "json",
+				success : function (data){
+					if (data.success){
+						//隐藏提示窗口
+						$("#removeContactsModal").modal("hide");
+						//刷新联系人列表
+						showContacts();
+					}else {
+						alert("删除联系人失败！")
+					}
+				}
+			})
 		})
 	}
 	
@@ -462,7 +523,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
-					<button type="button" class="btn btn-danger" data-dismiss="modal">删除</button>
+					<button type="button" class="btn btn-danger" id="deleteContacts">删除</button>
 				</div>
 			</div>
 		</div>

@@ -7,9 +7,11 @@ import com.chuanqihou.crm.vo.PaginationVo;
 import com.chuanqihou.crm.workbench.dao.CustomerDao;
 import com.chuanqihou.crm.workbench.dao.TranDao;
 import com.chuanqihou.crm.workbench.dao.TranHistoryDao;
+import com.chuanqihou.crm.workbench.dao.TransactionRemarkDao;
 import com.chuanqihou.crm.workbench.domain.Customer;
 import com.chuanqihou.crm.workbench.domain.Tran;
 import com.chuanqihou.crm.workbench.domain.TranHistory;
+import com.chuanqihou.crm.workbench.domain.TranRemark;
 import com.chuanqihou.crm.workbench.service.TransactionService;
 
 import java.util.HashMap;
@@ -25,6 +27,7 @@ public class TransactionServiceImpl implements TransactionService {
     TranDao tranDao = SqlSessionUtil.getSqlSession().getMapper(TranDao.class);
     TranHistoryDao tranHistoryDao = SqlSessionUtil.getSqlSession().getMapper(TranHistoryDao.class);
     CustomerDao customerDao = SqlSessionUtil.getSqlSession().getMapper(CustomerDao.class);
+    TransactionRemarkDao transactionRemarkDao = SqlSessionUtil.getSqlSession().getMapper(TransactionRemarkDao.class);
 
     @Override
     public PaginationVo<Tran> pageList(Map<String, Object> map) {
@@ -167,5 +170,11 @@ public class TransactionServiceImpl implements TransactionService {
             flag = false;
         }
         return flag;
+    }
+
+    @Override
+    public List<TranRemark> getRemarkListById(String transactionId) {
+        List<TranRemark> tranRemarks = transactionRemarkDao.getRemarkListById(transactionId);
+        return tranRemarks;
     }
 }

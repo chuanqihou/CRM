@@ -124,6 +124,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 		alert($("#search-state").val());*/
 
 		//调用ajax方法根据条件获取所有客户信息列表
+		// alert($.trim($("#search-type").val()));
 		$.ajax({
 			url: "workbench/transaction/pageList.do",
 			data: {
@@ -134,7 +135,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 				"customerName": $.trim($("#search-customerName").val()),		//查询条件：客户座机
 				"contactsName": $.trim($("#search-contactsName").val()),
 				"source": $.trim($("#search-source").val()),		//查询条件：客户网站
-				"stage": $.trim($("#search-state").val()),
+				"stage": $.trim($("#search-stage").val()),
 				"type": $.trim($("#search-type").val()),
 			},
 			type: "get",
@@ -154,7 +155,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 					html+='<td>'+n.type+'</td>';
 					html+='<td>'+n.owner+'</td>';
                     html+='<td>'+n.source+'</td>';
-                    html+='<td>'+n.createBy+'</td>';
+                    html+='<td>'+n.contactsId+'</td>';
 					html+='</tr>';
 				})
 				//将数据展示到前端
@@ -162,7 +163,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 				//没有查询出数据提示语
 				if ($("#transactionTbody").html() == "" || $("#transactionTbody").html() == null) {
 					html += '<tr class="active" align="center">';
-					html += '<td colspan="7">没有数据哦！</td>';
+					html += '<td colspan="10">没有数据哦！</td>';
 					html += '</tr>';
 				}
 				// 将提示语输出
